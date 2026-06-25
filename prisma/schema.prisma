@@ -24,6 +24,8 @@ model ReferralPartner {
   role            String?
   markets         String[]
   specializations String[]
+  followUpDate    DateTime? @db.Date
+  lastContactedAt DateTime?
   notes           Note[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -38,6 +40,7 @@ model PipelineContact {
   occupation     String?
   birthday       DateTime? @db.Date
   stage          String?
+  loanAmount     Float?
   notes          Note[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt

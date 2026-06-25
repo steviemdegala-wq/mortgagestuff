@@ -39,6 +39,11 @@ export async function PATCH(
         birthday: data.birthday ? new Date(data.birthday) : null,
       }),
       ...(data.stage !== undefined && { stage: data.stage || null }),
+      ...(data.loanAmount !== undefined && {
+        loanAmount: data.loanAmount !== "" && data.loanAmount !== null
+          ? parseFloat(data.loanAmount)
+          : null,
+      }),
     },
     include: { notes: { orderBy: { createdAt: "desc" } } },
   });

@@ -31,6 +31,7 @@ interface PipelineContact {
   occupation: string | null;
   birthday: string | null;
   stage: string | null;
+  loanAmount: number | null;
   notes: Note[];
   createdAt: string;
 }
@@ -182,6 +183,26 @@ export default function PipelineProfilePage() {
             </div>
           </div>
         ))}
+
+        {/* Loan amount */}
+        <div className="flex items-start px-4 py-3 gap-4">
+          <span className="text-xs font-medium text-gray-400 w-36 flex-shrink-0 pt-0.5">
+            Loan amount
+          </span>
+          <div className="flex-1">
+            <InlineEdit
+              value={contact.loanAmount != null ? String(contact.loanAmount) : ""}
+              onSave={(v) => patch({ loanAmount: v ? parseFloat(v) : null } as Partial<PipelineContact>)}
+              type="number"
+              placeholder="Add loan amount"
+            />
+            {contact.loanAmount != null && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {contact.loanAmount.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* Birthday */}
         <div className="flex items-start px-4 py-3 gap-4">

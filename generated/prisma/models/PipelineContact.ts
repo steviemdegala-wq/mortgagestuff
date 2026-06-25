@@ -20,8 +20,18 @@ export type PipelineContactModel = runtime.Types.Result.DefaultSelection<Prisma.
 
 export type AggregatePipelineContact = {
   _count: PipelineContactCountAggregateOutputType | null
+  _avg: PipelineContactAvgAggregateOutputType | null
+  _sum: PipelineContactSumAggregateOutputType | null
   _min: PipelineContactMinAggregateOutputType | null
   _max: PipelineContactMaxAggregateOutputType | null
+}
+
+export type PipelineContactAvgAggregateOutputType = {
+  loanAmount: number | null
+}
+
+export type PipelineContactSumAggregateOutputType = {
+  loanAmount: number | null
 }
 
 export type PipelineContactMinAggregateOutputType = {
@@ -33,6 +43,7 @@ export type PipelineContactMinAggregateOutputType = {
   occupation: string | null
   birthday: Date | null
   stage: string | null
+  loanAmount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +57,7 @@ export type PipelineContactMaxAggregateOutputType = {
   occupation: string | null
   birthday: Date | null
   stage: string | null
+  loanAmount: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -59,11 +71,20 @@ export type PipelineContactCountAggregateOutputType = {
   occupation: number
   birthday: number
   stage: number
+  loanAmount: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type PipelineContactAvgAggregateInputType = {
+  loanAmount?: true
+}
+
+export type PipelineContactSumAggregateInputType = {
+  loanAmount?: true
+}
 
 export type PipelineContactMinAggregateInputType = {
   id?: true
@@ -74,6 +95,7 @@ export type PipelineContactMinAggregateInputType = {
   occupation?: true
   birthday?: true
   stage?: true
+  loanAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -87,6 +109,7 @@ export type PipelineContactMaxAggregateInputType = {
   occupation?: true
   birthday?: true
   stage?: true
+  loanAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +123,7 @@ export type PipelineContactCountAggregateInputType = {
   occupation?: true
   birthday?: true
   stage?: true
+  loanAmount?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -143,6 +167,18 @@ export type PipelineContactAggregateArgs<ExtArgs extends runtime.Types.Extension
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: PipelineContactAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: PipelineContactSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: PipelineContactMinAggregateInputType
@@ -173,6 +209,8 @@ export type PipelineContactGroupByArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   _count?: PipelineContactCountAggregateInputType | true
+  _avg?: PipelineContactAvgAggregateInputType
+  _sum?: PipelineContactSumAggregateInputType
   _min?: PipelineContactMinAggregateInputType
   _max?: PipelineContactMaxAggregateInputType
 }
@@ -186,9 +224,12 @@ export type PipelineContactGroupByOutputType = {
   occupation: string | null
   birthday: Date | null
   stage: string | null
+  loanAmount: number | null
   createdAt: Date
   updatedAt: Date
   _count: PipelineContactCountAggregateOutputType | null
+  _avg: PipelineContactAvgAggregateOutputType | null
+  _sum: PipelineContactSumAggregateOutputType | null
   _min: PipelineContactMinAggregateOutputType | null
   _max: PipelineContactMaxAggregateOutputType | null
 }
@@ -220,6 +261,7 @@ export type PipelineContactWhereInput = {
   occupation?: Prisma.StringNullableFilter<"PipelineContact"> | string | null
   birthday?: Prisma.DateTimeNullableFilter<"PipelineContact"> | Date | string | null
   stage?: Prisma.StringNullableFilter<"PipelineContact"> | string | null
+  loanAmount?: Prisma.FloatNullableFilter<"PipelineContact"> | number | null
   createdAt?: Prisma.DateTimeFilter<"PipelineContact"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PipelineContact"> | Date | string
   notes?: Prisma.NoteListRelationFilter
@@ -234,6 +276,7 @@ export type PipelineContactOrderByWithRelationInput = {
   occupation?: Prisma.SortOrderInput | Prisma.SortOrder
   birthday?: Prisma.SortOrderInput | Prisma.SortOrder
   stage?: Prisma.SortOrderInput | Prisma.SortOrder
+  loanAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
@@ -251,6 +294,7 @@ export type PipelineContactWhereUniqueInput = Prisma.AtLeast<{
   occupation?: Prisma.StringNullableFilter<"PipelineContact"> | string | null
   birthday?: Prisma.DateTimeNullableFilter<"PipelineContact"> | Date | string | null
   stage?: Prisma.StringNullableFilter<"PipelineContact"> | string | null
+  loanAmount?: Prisma.FloatNullableFilter<"PipelineContact"> | number | null
   createdAt?: Prisma.DateTimeFilter<"PipelineContact"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PipelineContact"> | Date | string
   notes?: Prisma.NoteListRelationFilter
@@ -265,11 +309,14 @@ export type PipelineContactOrderByWithAggregationInput = {
   occupation?: Prisma.SortOrderInput | Prisma.SortOrder
   birthday?: Prisma.SortOrderInput | Prisma.SortOrder
   stage?: Prisma.SortOrderInput | Prisma.SortOrder
+  loanAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PipelineContactCountOrderByAggregateInput
+  _avg?: Prisma.PipelineContactAvgOrderByAggregateInput
   _max?: Prisma.PipelineContactMaxOrderByAggregateInput
   _min?: Prisma.PipelineContactMinOrderByAggregateInput
+  _sum?: Prisma.PipelineContactSumOrderByAggregateInput
 }
 
 export type PipelineContactScalarWhereWithAggregatesInput = {
@@ -284,6 +331,7 @@ export type PipelineContactScalarWhereWithAggregatesInput = {
   occupation?: Prisma.StringNullableWithAggregatesFilter<"PipelineContact"> | string | null
   birthday?: Prisma.DateTimeNullableWithAggregatesFilter<"PipelineContact"> | Date | string | null
   stage?: Prisma.StringNullableWithAggregatesFilter<"PipelineContact"> | string | null
+  loanAmount?: Prisma.FloatNullableWithAggregatesFilter<"PipelineContact"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PipelineContact"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PipelineContact"> | Date | string
 }
@@ -297,6 +345,7 @@ export type PipelineContactCreateInput = {
   occupation?: string | null
   birthday?: Date | string | null
   stage?: string | null
+  loanAmount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NoteCreateNestedManyWithoutPipelineContactInput
@@ -311,6 +360,7 @@ export type PipelineContactUncheckedCreateInput = {
   occupation?: string | null
   birthday?: Date | string | null
   stage?: string | null
+  loanAmount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutPipelineContactInput
@@ -325,6 +375,7 @@ export type PipelineContactUpdateInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUpdateManyWithoutPipelineContactNestedInput
@@ -339,6 +390,7 @@ export type PipelineContactUncheckedUpdateInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUncheckedUpdateManyWithoutPipelineContactNestedInput
@@ -353,6 +405,7 @@ export type PipelineContactCreateManyInput = {
   occupation?: string | null
   birthday?: Date | string | null
   stage?: string | null
+  loanAmount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -366,6 +419,7 @@ export type PipelineContactUpdateManyMutationInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -379,6 +433,7 @@ export type PipelineContactUncheckedUpdateManyInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -392,8 +447,13 @@ export type PipelineContactCountOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   birthday?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  loanAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PipelineContactAvgOrderByAggregateInput = {
+  loanAmount?: Prisma.SortOrder
 }
 
 export type PipelineContactMaxOrderByAggregateInput = {
@@ -405,6 +465,7 @@ export type PipelineContactMaxOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   birthday?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  loanAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -418,13 +479,26 @@ export type PipelineContactMinOrderByAggregateInput = {
   occupation?: Prisma.SortOrder
   birthday?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  loanAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type PipelineContactSumOrderByAggregateInput = {
+  loanAmount?: Prisma.SortOrder
 }
 
 export type PipelineContactNullableScalarRelationFilter = {
   is?: Prisma.PipelineContactWhereInput | null
   isNot?: Prisma.PipelineContactWhereInput | null
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type PipelineContactCreateNestedOneWithoutNotesInput = {
@@ -452,6 +526,7 @@ export type PipelineContactCreateWithoutNotesInput = {
   occupation?: string | null
   birthday?: Date | string | null
   stage?: string | null
+  loanAmount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -465,6 +540,7 @@ export type PipelineContactUncheckedCreateWithoutNotesInput = {
   occupation?: string | null
   birthday?: Date | string | null
   stage?: string | null
+  loanAmount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -494,6 +570,7 @@ export type PipelineContactUpdateWithoutNotesInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -507,6 +584,7 @@ export type PipelineContactUncheckedUpdateWithoutNotesInput = {
   occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   stage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loanAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -551,6 +629,7 @@ export type PipelineContactSelect<ExtArgs extends runtime.Types.Extensions.Inter
   occupation?: boolean
   birthday?: boolean
   stage?: boolean
+  loanAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   notes?: boolean | Prisma.PipelineContact$notesArgs<ExtArgs>
@@ -566,6 +645,7 @@ export type PipelineContactSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   occupation?: boolean
   birthday?: boolean
   stage?: boolean
+  loanAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["pipelineContact"]>
@@ -579,6 +659,7 @@ export type PipelineContactSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   occupation?: boolean
   birthday?: boolean
   stage?: boolean
+  loanAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["pipelineContact"]>
@@ -592,11 +673,12 @@ export type PipelineContactSelectScalar = {
   occupation?: boolean
   birthday?: boolean
   stage?: boolean
+  loanAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PipelineContactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "mailingAddress" | "occupation" | "birthday" | "stage" | "createdAt" | "updatedAt", ExtArgs["result"]["pipelineContact"]>
+export type PipelineContactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "mailingAddress" | "occupation" | "birthday" | "stage" | "loanAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["pipelineContact"]>
 export type PipelineContactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.PipelineContact$notesArgs<ExtArgs>
   _count?: boolean | Prisma.PipelineContactCountOutputTypeDefaultArgs<ExtArgs>
@@ -618,6 +700,7 @@ export type $PipelineContactPayload<ExtArgs extends runtime.Types.Extensions.Int
     occupation: string | null
     birthday: Date | null
     stage: string | null
+    loanAmount: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["pipelineContact"]>
@@ -1052,6 +1135,7 @@ export interface PipelineContactFieldRefs {
   readonly occupation: Prisma.FieldRef<"PipelineContact", 'String'>
   readonly birthday: Prisma.FieldRef<"PipelineContact", 'DateTime'>
   readonly stage: Prisma.FieldRef<"PipelineContact", 'String'>
+  readonly loanAmount: Prisma.FieldRef<"PipelineContact", 'Float'>
   readonly createdAt: Prisma.FieldRef<"PipelineContact", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PipelineContact", 'DateTime'>
 }

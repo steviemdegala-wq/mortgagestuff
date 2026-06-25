@@ -1,6 +1,7 @@
 import ConversationTracker from "@/components/ConversationTracker";
 import HistoryPanel from "@/components/HistoryPanel";
 import BirthdayWidget from "@/components/BirthdayWidget";
+import FollowUpWidget from "@/components/FollowUpWidget";
 
 export default function DashboardPage() {
   return (
@@ -15,7 +16,8 @@ export default function DashboardPage() {
           <ConversationTracker />
           <HistoryPanel />
         </div>
-        <div>
+        <div className="space-y-6">
+          <FollowUpWidget />
           <BirthdayWidget />
         </div>
       </div>

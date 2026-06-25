@@ -22,6 +22,8 @@ interface Partner {
   role: string | null;
   markets: string[];
   specializations: string[];
+  followUpDate: string | null;
+  lastContactedAt: string | null;
   notes: Note[];
   createdAt: string;
 }
@@ -47,6 +49,8 @@ export default function PartnerProfilePage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [logging, setLogging] = useState(false);
+  const [loggedFlash, setLoggedFlash] = useState(false);
 
   const fetchPartner = useCallback(async () => {
     const res = await fetch(`/api/partners/${id}`);
@@ -83,6 +87,19 @@ export default function PartnerProfilePage() {
     if (!partner) return;
     const current = partner[type];
     await patch({ [type]: current.filter((t) => t !== tag) });
+  }
+
+  async function handleLogConversation() {
+    setLogging(true);
+    try {
+      const res = await fetch(`/api/partners/${id}/log-contact`, { method: "POST" });
+      const data = await res.json();
+      setPartner(data.partner);
+      setLoggedFlash(true);
+      setTimeout(() => setLoggedFlash(false), 2500);
+    } finally {
+      setLogging(false);
+    }
   }
 
   async function handleAddNote(body: string) {
@@ -134,17 +151,35 @@ export default function PartnerProfilePage() {
       </Link>
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-black">
-          <InlineEdit
-            value={partner.name}
-            onSave={(v) => patch({ name: v })}
-            className="text-2xl font-semibold"
-          />
-        </h1>
-        <p className="text-xs text-gray-400 mt-1">
-          Added {formatDate(partner.createdAt)}
-        </p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-semibold text-black">
+            <InlineEdit
+              value={partner.name}
+              onSave={(v) => patch({ name: v })}
+              className="text-2xl font-semibold"
+            />
+          </h1>
+          <div className="flex items-center gap-3 mt-1">
+            <p className="text-xs text-gray-400">Added {formatDate(partner.createdAt)}</p>
+            {partner.lastContactedAt && (
+              <p className="text-xs text-gray-400">
+                &middot; Last contacted {formatDate(partner.lastContactedAt)}
+              </p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleLogConversation}
+          disabled={logging}
+          className={`text-sm px-4 py-2 rounded transition-colors flex-shrink-0 ${
+            loggedFlash
+              ? "bg-gray-100 text-gray-600"
+              : "bg-black text-white hover:bg-gray-900 disabled:opacity-50"
+          }`}
+        >
+          {logging ? "Logging..." : loggedFlash ? "Conversation logged" : "Log conversation"}
+        </button>
       </div>
 
       {/* Fields */}
@@ -184,6 +219,26 @@ export default function PartnerProfilePage() {
             {partner.birthday && (
               <p className="text-xs text-gray-400 mt-0.5">
                 {formatDate(partner.birthday)}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Follow-up date */}
+        <div className="flex items-start px-4 py-3 gap-4">
+          <span className="text-xs font-medium text-gray-400 w-28 flex-shrink-0 pt-0.5">
+            Follow-up
+          </span>
+          <div className="flex-1">
+            <InlineEdit
+              value={toDateInputValue(partner.followUpDate)}
+              onSave={(v) => patch({ followUpDate: v || null } as Partial<Partner>)}
+              type="date"
+              placeholder="Set follow-up date"
+            />
+            {partner.followUpDate && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {formatDate(partner.followUpDate)}
               </p>
             )}
           </div>

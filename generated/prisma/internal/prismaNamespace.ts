@@ -762,6 +762,8 @@ export const ReferralPartnerScalarFieldEnum = {
   role: 'role',
   markets: 'markets',
   specializations: 'specializations',
+  followUpDate: 'followUpDate',
+  lastContactedAt: 'lastContactedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -778,6 +780,7 @@ export const PipelineContactScalarFieldEnum = {
   occupation: 'occupation',
   birthday: 'birthday',
   stage: 'stage',
+  loanAmount: 'loanAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

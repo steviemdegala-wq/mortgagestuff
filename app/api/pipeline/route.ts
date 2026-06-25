@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       occupation: data.occupation ?? null,
       birthday: data.birthday ? new Date(data.birthday) : null,
       stage: data.stage ?? null,
+      loanAmount: data.loanAmount ? parseFloat(data.loanAmount) : null,
     },
   });
 

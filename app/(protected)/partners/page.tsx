@@ -12,7 +12,17 @@ interface Partner {
   phone: string | null;
   markets: string[];
   specializations: string[];
+  lastContactedAt: string | null;
   _count: { notes: number };
+}
+
+function daysSince(dateStr: string): string {
+  const days = Math.floor(
+    (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (days === 0) return "today";
+  if (days === 1) return "yesterday";
+  return `${days}d ago`;
 }
 
 export default function PartnersPage() {
@@ -141,6 +151,9 @@ export default function PartnersPage() {
                 <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden lg:table-cell">
                   Phone
                 </th>
+                <th className="text-left text-xs font-medium text-gray-500 px-4 py-3 hidden xl:table-cell">
+                  Last contact
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -180,6 +193,11 @@ export default function PartnersPage() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 hidden lg:table-cell">
                     {partner.phone ?? <span className="text-gray-300">No phone</span>}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500 hidden xl:table-cell">
+                    {partner.lastContactedAt
+                      ? daysSince(partner.lastContactedAt)
+                      : <span className="text-gray-300">Never</span>}
                   </td>
                 </tr>
               ))}

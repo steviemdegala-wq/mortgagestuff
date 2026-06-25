@@ -6,7 +6,7 @@ interface InlineEditProps {
   value: string;
   onSave: (value: string) => Promise<void>;
   placeholder?: string;
-  type?: "text" | "email" | "tel" | "date" | "textarea";
+  type?: "text" | "email" | "tel" | "date" | "number" | "textarea";
   className?: string;
 }
 

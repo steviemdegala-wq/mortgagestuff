@@ -31,6 +31,8 @@ export type ReferralPartnerMinAggregateOutputType = {
   phone: string | null
   birthday: Date | null
   role: string | null
+  followUpDate: Date | null
+  lastContactedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +44,8 @@ export type ReferralPartnerMaxAggregateOutputType = {
   phone: string | null
   birthday: Date | null
   role: string | null
+  followUpDate: Date | null
+  lastContactedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -55,6 +59,8 @@ export type ReferralPartnerCountAggregateOutputType = {
   role: number
   markets: number
   specializations: number
+  followUpDate: number
+  lastContactedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -68,6 +74,8 @@ export type ReferralPartnerMinAggregateInputType = {
   phone?: true
   birthday?: true
   role?: true
+  followUpDate?: true
+  lastContactedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -79,6 +87,8 @@ export type ReferralPartnerMaxAggregateInputType = {
   phone?: true
   birthday?: true
   role?: true
+  followUpDate?: true
+  lastContactedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -92,6 +102,8 @@ export type ReferralPartnerCountAggregateInputType = {
   role?: true
   markets?: true
   specializations?: true
+  followUpDate?: true
+  lastContactedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -178,6 +190,8 @@ export type ReferralPartnerGroupByOutputType = {
   role: string | null
   markets: string[]
   specializations: string[]
+  followUpDate: Date | null
+  lastContactedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ReferralPartnerCountAggregateOutputType | null
@@ -212,6 +226,8 @@ export type ReferralPartnerWhereInput = {
   role?: Prisma.StringNullableFilter<"ReferralPartner"> | string | null
   markets?: Prisma.StringNullableListFilter<"ReferralPartner">
   specializations?: Prisma.StringNullableListFilter<"ReferralPartner">
+  followUpDate?: Prisma.DateTimeNullableFilter<"ReferralPartner"> | Date | string | null
+  lastContactedAt?: Prisma.DateTimeNullableFilter<"ReferralPartner"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ReferralPartner"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ReferralPartner"> | Date | string
   notes?: Prisma.NoteListRelationFilter
@@ -226,6 +242,8 @@ export type ReferralPartnerOrderByWithRelationInput = {
   role?: Prisma.SortOrderInput | Prisma.SortOrder
   markets?: Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  followUpDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastContactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   notes?: Prisma.NoteOrderByRelationAggregateInput
@@ -243,6 +261,8 @@ export type ReferralPartnerWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringNullableFilter<"ReferralPartner"> | string | null
   markets?: Prisma.StringNullableListFilter<"ReferralPartner">
   specializations?: Prisma.StringNullableListFilter<"ReferralPartner">
+  followUpDate?: Prisma.DateTimeNullableFilter<"ReferralPartner"> | Date | string | null
+  lastContactedAt?: Prisma.DateTimeNullableFilter<"ReferralPartner"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ReferralPartner"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ReferralPartner"> | Date | string
   notes?: Prisma.NoteListRelationFilter
@@ -257,6 +277,8 @@ export type ReferralPartnerOrderByWithAggregationInput = {
   role?: Prisma.SortOrderInput | Prisma.SortOrder
   markets?: Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  followUpDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastContactedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ReferralPartnerCountOrderByAggregateInput
@@ -276,6 +298,8 @@ export type ReferralPartnerScalarWhereWithAggregatesInput = {
   role?: Prisma.StringNullableWithAggregatesFilter<"ReferralPartner"> | string | null
   markets?: Prisma.StringNullableListFilter<"ReferralPartner">
   specializations?: Prisma.StringNullableListFilter<"ReferralPartner">
+  followUpDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ReferralPartner"> | Date | string | null
+  lastContactedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReferralPartner"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ReferralPartner"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ReferralPartner"> | Date | string
 }
@@ -289,6 +313,8 @@ export type ReferralPartnerCreateInput = {
   role?: string | null
   markets?: Prisma.ReferralPartnerCreatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerCreatespecializationsInput | string[]
+  followUpDate?: Date | string | null
+  lastContactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NoteCreateNestedManyWithoutReferralPartnerInput
@@ -303,6 +329,8 @@ export type ReferralPartnerUncheckedCreateInput = {
   role?: string | null
   markets?: Prisma.ReferralPartnerCreatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerCreatespecializationsInput | string[]
+  followUpDate?: Date | string | null
+  lastContactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutReferralPartnerInput
@@ -317,6 +345,8 @@ export type ReferralPartnerUpdateInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUpdateManyWithoutReferralPartnerNestedInput
@@ -331,6 +361,8 @@ export type ReferralPartnerUncheckedUpdateInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NoteUncheckedUpdateManyWithoutReferralPartnerNestedInput
@@ -345,6 +377,8 @@ export type ReferralPartnerCreateManyInput = {
   role?: string | null
   markets?: Prisma.ReferralPartnerCreatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerCreatespecializationsInput | string[]
+  followUpDate?: Date | string | null
+  lastContactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -358,6 +392,8 @@ export type ReferralPartnerUpdateManyMutationInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -371,6 +407,8 @@ export type ReferralPartnerUncheckedUpdateManyInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -392,6 +430,8 @@ export type ReferralPartnerCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   markets?: Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  followUpDate?: Prisma.SortOrder
+  lastContactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -403,6 +443,8 @@ export type ReferralPartnerMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   birthday?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  followUpDate?: Prisma.SortOrder
+  lastContactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -414,6 +456,8 @@ export type ReferralPartnerMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   birthday?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  followUpDate?: Prisma.SortOrder
+  lastContactedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -474,6 +518,8 @@ export type ReferralPartnerCreateWithoutNotesInput = {
   role?: string | null
   markets?: Prisma.ReferralPartnerCreatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerCreatespecializationsInput | string[]
+  followUpDate?: Date | string | null
+  lastContactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -487,6 +533,8 @@ export type ReferralPartnerUncheckedCreateWithoutNotesInput = {
   role?: string | null
   markets?: Prisma.ReferralPartnerCreatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerCreatespecializationsInput | string[]
+  followUpDate?: Date | string | null
+  lastContactedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -516,6 +564,8 @@ export type ReferralPartnerUpdateWithoutNotesInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -529,6 +579,8 @@ export type ReferralPartnerUncheckedUpdateWithoutNotesInput = {
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markets?: Prisma.ReferralPartnerUpdatemarketsInput | string[]
   specializations?: Prisma.ReferralPartnerUpdatespecializationsInput | string[]
+  followUpDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastContactedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -573,6 +625,8 @@ export type ReferralPartnerSelect<ExtArgs extends runtime.Types.Extensions.Inter
   role?: boolean
   markets?: boolean
   specializations?: boolean
+  followUpDate?: boolean
+  lastContactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   notes?: boolean | Prisma.ReferralPartner$notesArgs<ExtArgs>
@@ -588,6 +642,8 @@ export type ReferralPartnerSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   role?: boolean
   markets?: boolean
   specializations?: boolean
+  followUpDate?: boolean
+  lastContactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["referralPartner"]>
@@ -601,6 +657,8 @@ export type ReferralPartnerSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   role?: boolean
   markets?: boolean
   specializations?: boolean
+  followUpDate?: boolean
+  lastContactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["referralPartner"]>
@@ -614,11 +672,13 @@ export type ReferralPartnerSelectScalar = {
   role?: boolean
   markets?: boolean
   specializations?: boolean
+  followUpDate?: boolean
+  lastContactedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ReferralPartnerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "birthday" | "role" | "markets" | "specializations" | "createdAt" | "updatedAt", ExtArgs["result"]["referralPartner"]>
+export type ReferralPartnerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "birthday" | "role" | "markets" | "specializations" | "followUpDate" | "lastContactedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["referralPartner"]>
 export type ReferralPartnerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | Prisma.ReferralPartner$notesArgs<ExtArgs>
   _count?: boolean | Prisma.ReferralPartnerCountOutputTypeDefaultArgs<ExtArgs>
@@ -640,6 +700,8 @@ export type $ReferralPartnerPayload<ExtArgs extends runtime.Types.Extensions.Int
     role: string | null
     markets: string[]
     specializations: string[]
+    followUpDate: Date | null
+    lastContactedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["referralPartner"]>
@@ -1074,6 +1136,8 @@ export interface ReferralPartnerFieldRefs {
   readonly role: Prisma.FieldRef<"ReferralPartner", 'String'>
   readonly markets: Prisma.FieldRef<"ReferralPartner", 'String[]'>
   readonly specializations: Prisma.FieldRef<"ReferralPartner", 'String[]'>
+  readonly followUpDate: Prisma.FieldRef<"ReferralPartner", 'DateTime'>
+  readonly lastContactedAt: Prisma.FieldRef<"ReferralPartner", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ReferralPartner", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ReferralPartner", 'DateTime'>
 }

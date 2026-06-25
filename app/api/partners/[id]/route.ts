@@ -39,6 +39,12 @@ export async function PATCH(
       ...(data.specializations !== undefined && {
         specializations: data.specializations,
       }),
+      ...(data.followUpDate !== undefined && {
+        followUpDate: data.followUpDate ? new Date(data.followUpDate) : null,
+      }),
+      ...(data.lastContactedAt !== undefined && {
+        lastContactedAt: data.lastContactedAt ? new Date(data.lastContactedAt) : null,
+      }),
     },
     include: { notes: { orderBy: { createdAt: "desc" } } },
   });

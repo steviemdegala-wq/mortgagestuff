@@ -21,6 +21,7 @@ interface PipelineContact {
   stage: string | null;
   phone: string | null;
   occupation: string | null;
+  loanAmount: number | null;
   _count: { notes: number };
 }
 
@@ -69,9 +70,19 @@ export default function PipelinePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-black">Pipeline</h1>
-          <p className="text-sm text-gray-400 mt-0.5">
-            {contacts.length} {contacts.length === 1 ? "contact" : "contacts"}
-          </p>
+          <div className="flex items-center gap-3 mt-0.5">
+            <p className="text-sm text-gray-400">
+              {contacts.length} {contacts.length === 1 ? "contact" : "contacts"}
+            </p>
+            {(() => {
+              const total = contacts.reduce((sum, c) => sum + (c.loanAmount ?? 0), 0);
+              return total > 0 ? (
+                <p className="text-sm text-gray-500 font-medium">
+                  &middot; {total.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })} total
+                </p>
+              ) : null;
+            })()}
+          </div>
         </div>
         <button
           onClick={() => setShowModal(true)}
