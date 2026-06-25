@@ -25,19 +25,27 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const data = await request.json();
+  try {
+    const data = await request.json();
 
-  const partner = await prisma.referralPartner.create({
-    data: {
-      name: data.name,
-      email: data.email ?? null,
-      phone: data.phone ?? null,
-      birthday: data.birthday ? new Date(data.birthday) : null,
-      role: data.role ?? null,
-      markets: data.markets ?? [],
-      specializations: data.specializations ?? [],
-    },
-  });
+    const partner = await prisma.referralPartner.create({
+      data: {
+        name: data.name,
+        email: data.email ?? null,
+        phone: data.phone ?? null,
+        birthday: data.birthday ? new Date(data.birthday) : null,
+        role: data.role ?? null,
+        markets: data.markets ?? [],
+        specializations: data.specializations ?? [],
+      },
+    });
 
-  return NextResponse.json(partner, { status: 201 });
+    return NextResponse.json(partner, { status: 201 });
+  } catch (err) {
+    console.error("POST /api/partners error:", err);
+    return NextResponse.json(
+      { error: String(err) },
+      { status: 500 }
+    );
+  }
 }
