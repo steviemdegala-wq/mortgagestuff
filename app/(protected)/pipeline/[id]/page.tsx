@@ -104,6 +104,20 @@ export default function PipelineProfilePage() {
     );
   }
 
+  async function handleEditNote(noteId: string, body: string) {
+    const res = await fetch(`/api/notes/${noteId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body }),
+    });
+    const updated = await res.json();
+    setContact((prev) =>
+      prev
+        ? { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? updated : n)) }
+        : prev
+    );
+  }
+
   async function handleDelete() {
     if (!confirm("Delete this contact? This cannot be undone.")) return;
     setDeleting(true);
@@ -231,6 +245,7 @@ export default function PipelineProfilePage() {
           notes={contact.notes}
           onAdd={handleAddNote}
           onDelete={handleDeleteNote}
+          onEdit={handleEditNote}
         />
       </div>
 

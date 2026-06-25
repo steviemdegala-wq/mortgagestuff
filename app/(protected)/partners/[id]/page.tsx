@@ -123,6 +123,20 @@ export default function PartnerProfilePage() {
     );
   }
 
+  async function handleEditNote(noteId: string, body: string) {
+    const res = await fetch(`/api/notes/${noteId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body }),
+    });
+    const updated = await res.json();
+    setPartner((prev) =>
+      prev
+        ? { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? updated : n)) }
+        : prev
+    );
+  }
+
   async function handleDelete() {
     if (!confirm("Delete this partner? This cannot be undone.")) return;
     setDeleting(true);
@@ -283,6 +297,7 @@ export default function PartnerProfilePage() {
           notes={partner.notes}
           onAdd={handleAddNote}
           onDelete={handleDeleteNote}
+          onEdit={handleEditNote}
         />
       </div>
 

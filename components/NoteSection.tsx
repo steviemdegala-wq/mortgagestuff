@@ -12,6 +12,7 @@ interface NoteSectionProps {
   notes: Note[];
   onAdd: (body: string) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onEdit: (id: string, body: string) => Promise<void>;
 }
 
 function formatDate(dateStr: string): string {
@@ -26,9 +27,12 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export default function NoteSection({ notes, onAdd, onDelete }: NoteSectionProps) {
+export default function NoteSection({ notes, onAdd, onDelete, onEdit }: NoteSectionProps) {
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,21 +76,63 @@ export default function NoteSection({ notes, onAdd, onDelete }: NoteSectionProps
       ) : (
         <ul className="space-y-4">
           {notes.map((note) => (
-            <li
-              key={note.id}
-              className="border-t border-gray-100 pt-4 group"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <p className="text-sm text-black whitespace-pre-wrap flex-1">{note.body}</p>
-                <button
-                  onClick={() => onDelete(note.id)}
-                  className="text-xs text-gray-300 hover:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                  aria-label="Delete note"
-                >
-                  Delete
-                </button>
-              </div>
-              <p className="text-xs text-gray-400 mt-1">{formatDate(note.createdAt)}</p>
+            <li key={note.id} className="border-t border-gray-100 pt-4 group">
+              {editingId === note.id ? (
+                <div>
+                  <textarea
+                    value={editDraft}
+                    onChange={(e) => setEditDraft(e.target.value)}
+                    rows={3}
+                    autoFocus
+                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm text-black focus:outline-none focus:border-gray-400 resize-none"
+                  />
+                  <div className="flex gap-2 mt-2 justify-end">
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="text-xs text-gray-500 px-3 py-1.5 border border-gray-200 rounded hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      disabled={!editDraft.trim() || editSaving}
+                      onClick={async () => {
+                        if (!editDraft.trim()) return;
+                        setEditSaving(true);
+                        try {
+                          await onEdit(note.id, editDraft.trim());
+                          setEditingId(null);
+                        } finally {
+                          setEditSaving(false);
+                        }
+                      }}
+                      className="text-xs bg-black text-white px-3 py-1.5 rounded hover:bg-gray-900 disabled:opacity-40 transition-colors"
+                    >
+                      {editSaving ? "Saving..." : "Save"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <p className="text-sm text-black whitespace-pre-wrap flex-1">{note.body}</p>
+                    <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                      <button
+                        onClick={() => { setEditingId(note.id); setEditDraft(note.body); }}
+                        className="text-xs text-gray-400 hover:text-gray-700"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDelete(note.id)}
+                        className="text-xs text-gray-300 hover:text-gray-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">{formatDate(note.createdAt)}</p>
+                </div>
+              )}
             </li>
           ))}
         </ul>
