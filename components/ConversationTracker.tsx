@@ -7,8 +7,11 @@ function isSunday() {
 }
 
 export default function ConversationTracker() {
+  const [savedCount, setSavedCount] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const sunday = isSunday();
 
   useEffect(() => {
@@ -18,24 +21,40 @@ export default function ConversationTracker() {
     }
     fetch("/api/daily-log")
       .then((r) => r.json())
-      .then((data) => setCount(data.count ?? 0))
+      .then((data) => {
+        const c = data.count ?? 0;
+        setCount(c);
+        setSavedCount(c);
+      })
       .finally(() => setLoading(false));
   }, [sunday]);
 
-  async function handleCircleClick(index: number) {
-    // index is 0-based. Clicking circle at index i:
-    // - if i+1 > current count, fill up to i+1
-    // - if i+1 <= count, set count to i (unfill from that position)
+  function handleCircleClick(index: number) {
     const newCount = index + 1 === count ? index : index + 1;
     setCount(newCount);
-    await fetch("/api/daily-log", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ count: newCount }),
-    });
+    setSaved(false);
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    setSaved(false);
+    try {
+      const res = await fetch("/api/daily-log", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setSavedCount(count);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } finally {
+      setSaving(false);
+    }
   }
 
   const percentage = Math.round((count / 10) * 100);
+  const isDirty = count !== savedCount;
 
   return (
     <div className="border border-gray-200 rounded-lg p-6">
@@ -82,13 +101,28 @@ export default function ConversationTracker() {
               );
             })}
           </div>
-          <p className="text-xs text-gray-400 mt-4">
-            {count === 0
-              ? "Click a circle to log a conversation."
-              : count === 10
-              ? "Goal reached. Great work."
-              : `${10 - count} more to reach your goal.`}
-          </p>
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-xs text-gray-400">
+              {count === 0
+                ? "Click a circle to log a conversation."
+                : count === 10
+                ? "Goal reached. Great work."
+                : `${10 - count} more to reach your goal.`}
+            </p>
+            <button
+              onClick={handleSave}
+              disabled={saving || (!isDirty && !saved)}
+              className={`text-xs px-3 py-1.5 rounded transition-colors ${
+                saved
+                  ? "bg-gray-100 text-gray-500"
+                  : isDirty
+                  ? "bg-black text-white hover:bg-gray-900"
+                  : "bg-gray-100 text-gray-400 cursor-default"
+              }`}
+            >
+              {saving ? "Saving..." : saved ? "Saved" : "Save"}
+            </button>
+          </div>
         </>
       )}
     </div>
