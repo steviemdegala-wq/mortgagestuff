@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AddPipelineModal from "@/components/AddPipelineModal";
+import PipelineValueChart from "@/components/PipelineValueChart";
 
 const STAGES = [
   "New Lead",
@@ -91,6 +92,8 @@ export default function PipelinePage() {
           Add contact
         </button>
       </div>
+
+      <PipelineValueChart contacts={contacts} />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
