@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model DailyLog {
+  id        String   @id @default(cuid())
+  date      DateTime @unique @db.Date
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReferralPartner {
+  id              String    @id @default(cuid())
+  name            String
+  email           String?
+  phone           String?
+  birthday        DateTime? @db.Date
+  role            String?
+  markets         String[]
+  specializations String[]
+  notes           Note[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model PipelineContact {
+  id             String    @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  mailingAddress String?
+  occupation     String?
+  birthday       DateTime? @db.Date
+  stage          String?
+  notes          Note[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Note {
+  id                String           @id @default(cuid())
+  body              String
+  createdAt         DateTime         @default(now())
+  referralPartner   ReferralPartner? @relation(fields: [referralPartnerId], references: [id], onDelete: Cascade)
+  referralPartnerId String?
+  pipelineContact   PipelineContact? @relation(fields: [pipelineContactId], references: [id], onDelete: Cascade)
+  pipelineContactId String?
+}
