@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const STAGES = [
   "New Lead",
-  "Pre-Approval",
+  "Pre-Qualified",
   "Application",
   "Processing",
   "Underwriting",
@@ -14,7 +14,7 @@ const STAGES = [
 
 const STAGE_COLORS: Record<string, string> = {
   "New Lead":      "#94a3b8",
-  "Pre-Approval":  "#3b82f6",
+  "Pre-Qualified":  "#3b82f6",
   "Application":   "#8b5cf6",
   "Processing":    "#f59e0b",
   "Underwriting":  "#ef4444",

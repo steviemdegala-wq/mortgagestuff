@@ -8,7 +8,7 @@ import PipelineValueChart from "@/components/PipelineValueChart";
 
 const STAGES = [
   "New Lead",
-  "Pre-Approval",
+  "Pre-Qualified",
   "Application",
   "Processing",
   "Underwriting",

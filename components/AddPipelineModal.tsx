@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const STAGES = [
   "New Lead",
-  "Pre-Approval",
+  "Pre-Qualified",
   "Application",
   "Processing",
   "Underwriting",

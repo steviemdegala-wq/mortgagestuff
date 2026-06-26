@@ -8,7 +8,7 @@ import NoteSection from "@/components/NoteSection";
 
 const STAGES = [
   "New Lead",
-  "Pre-Approval",
+  "Pre-Qualified",
   "Application",
   "Processing",
   "Underwriting",
