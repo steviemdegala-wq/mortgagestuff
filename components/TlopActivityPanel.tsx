@@ -33,6 +33,11 @@ interface Activity {
   readingMinutes: number;
 }
 
+const DEFAULT_ACTIVITY: Activity = {
+  likes: 0, comments: 0, connectionRequests: 0, dms: 0, posts: 0,
+  followUps: 0, newLeads: 0, creditPulls: 0, exerciseMinutes: 0, readingMinutes: 0,
+};
+
 function todayDateStr() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -110,7 +115,7 @@ export default function TlopActivityPanel() {
   useEffect(() => { load(); }, [load]);
 
   function update(field: string, value: number) {
-    setActivity((prev) => (prev ? { ...prev, [field]: value } : null));
+    setActivity((prev) => ({ ...(prev ?? DEFAULT_ACTIVITY), [field]: value }));
     setDirty(true);
     setSaved(false);
   }
@@ -140,10 +145,7 @@ export default function TlopActivityPanel() {
     }
   }
 
-  const a: Activity = activity ?? {
-    likes: 0, comments: 0, connectionRequests: 0, dms: 0, posts: 0,
-    followUps: 0, newLeads: 0, creditPulls: 0, exerciseMinutes: 0, readingMinutes: 0,
-  };
+  const a: Activity = activity ?? DEFAULT_ACTIVITY;
 
   return (
     <div className="border border-gray-200 rounded-lg p-6 space-y-6">
