@@ -45,8 +45,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
           <nav className="flex items-center gap-6">
             <NavLink href="/">Dashboard</NavLink>
-            <NavLink href="/partners">Referral Partners</NavLink>
-            <NavLink href="/pipeline">Pipeline</NavLink>
+            <NavLink href="/people">People</NavLink>
           </nav>
         </div>
         <button

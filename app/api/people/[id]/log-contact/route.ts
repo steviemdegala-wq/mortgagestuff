@@ -7,13 +7,13 @@ function todayDate() {
 }
 
 export async function POST(
-  _request: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
 
-  const [partner, log] = await Promise.all([
-    prisma.referralPartner.update({
+  const [person, log] = await Promise.all([
+    prisma.person.update({
       where: { id },
       data: { lastContactedAt: new Date() },
       include: { notes: { orderBy: { createdAt: "desc" } } },
@@ -25,5 +25,5 @@ export async function POST(
     }),
   ]);
 
-  return NextResponse.json({ partner, dailyCount: log.count });
+  return NextResponse.json({ person, dailyCount: log.count });
 }

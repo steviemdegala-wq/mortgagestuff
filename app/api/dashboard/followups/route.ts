@@ -5,10 +5,8 @@ export async function GET() {
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999);
 
-  const partners = await prisma.referralPartner.findMany({
-    where: {
-      followUpDate: { lte: todayEnd },
-    },
+  const people = await prisma.person.findMany({
+    where: { followUpDate: { lte: todayEnd } },
     orderBy: { followUpDate: "asc" },
     select: {
       id: true,
@@ -20,5 +18,5 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json(partners);
+  return NextResponse.json(people);
 }

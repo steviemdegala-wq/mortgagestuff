@@ -47,17 +47,32 @@ export { Prisma }
  */
 export type DailyLog = Prisma.DailyLogModel
 /**
- * Model ReferralPartner
+ * Model Person
  * 
  */
-export type ReferralPartner = Prisma.ReferralPartnerModel
-/**
- * Model PipelineContact
- * 
- */
-export type PipelineContact = Prisma.PipelineContactModel
+export type Person = Prisma.PersonModel
 /**
  * Model Note
  * 
  */
 export type Note = Prisma.NoteModel
+/**
+ * Model DailyActivity
+ * 
+ */
+export type DailyActivity = Prisma.DailyActivityModel
+/**
+ * Model ConversationLog
+ * 
+ */
+export type ConversationLog = Prisma.ConversationLogModel
+/**
+ * Model FaceToFaceMeeting
+ * 
+ */
+export type FaceToFaceMeeting = Prisma.FaceToFaceMeetingModel
+/**
+ * Model NetworkingEvent
+ * 
+ */
+export type NetworkingEvent = Prisma.NetworkingEventModel

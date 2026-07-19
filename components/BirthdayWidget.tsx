@@ -7,7 +7,6 @@ interface BirthdayEntry {
   id: string;
   name: string;
   birthday: string;
-  type: "partner" | "pipeline";
   daysUntil: number;
 }
 
@@ -40,12 +39,9 @@ export default function BirthdayWidget() {
       ) : (
         <ul className="space-y-3">
           {entries.map((entry) => {
-            const href =
-              entry.type === "partner"
-                ? `/partners/${entry.id}`
-                : `/pipeline/${entry.id}`;
+            const href = `/people/${entry.id}`;
             return (
-              <li key={`${entry.type}-${entry.id}`} className="flex items-center justify-between">
+              <li key={entry.id} className="flex items-center justify-between">
                 <Link
                   href={href}
                   className="text-sm text-black hover:underline underline-offset-2"

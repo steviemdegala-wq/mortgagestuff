@@ -54,7 +54,7 @@ export default function FollowUpWidget() {
             <div key={f.id} className="flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <Link
-                  href={`/partners/${f.id}`}
+                  href={`/people/${f.id}`}
                   className="text-sm font-medium text-black hover:underline underline-offset-2"
                 >
                   {f.name}

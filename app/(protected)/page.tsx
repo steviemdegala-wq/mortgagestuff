@@ -2,6 +2,9 @@ import ConversationTracker from "@/components/ConversationTracker";
 import HistoryPanel from "@/components/HistoryPanel";
 import BirthdayWidget from "@/components/BirthdayWidget";
 import FollowUpWidget from "@/components/FollowUpWidget";
+import TlopActivityPanel from "@/components/TlopActivityPanel";
+import WeeklySummaryPanel from "@/components/WeeklySummaryPanel";
+import DayOfWeekPanel from "@/components/DayOfWeekPanel";
 
 export default function DashboardPage() {
   return (
@@ -14,6 +17,9 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <ConversationTracker />
+          <TlopActivityPanel />
+          <WeeklySummaryPanel />
+          <DayOfWeekPanel />
           <HistoryPanel />
         </div>
         <div className="space-y-6">

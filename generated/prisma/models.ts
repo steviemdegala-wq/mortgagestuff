@@ -9,7 +9,10 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/DailyLog'
-export type * from './models/ReferralPartner'
-export type * from './models/PipelineContact'
+export type * from './models/Person'
 export type * from './models/Note'
+export type * from './models/DailyActivity'
+export type * from './models/ConversationLog'
+export type * from './models/FaceToFaceMeeting'
+export type * from './models/NetworkingEvent'
 export type * from './commonInputTypes'

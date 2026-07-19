@@ -15,15 +15,19 @@ model DailyLog {
   updatedAt DateTime @updatedAt
 }
 
-model ReferralPartner {
+model Person {
   id              String    @id @default(cuid())
   name            String
   email           String?
   phone           String?
   birthday        DateTime? @db.Date
   role            String?
+  mailingAddress  String?
   markets         String[]
   specializations String[]
+  tags            String[]
+  stage           String?
+  loanAmount      Float?
   followUpDate    DateTime? @db.Date
   lastContactedAt DateTime?
   notes           Note[]
@@ -31,27 +35,53 @@ model ReferralPartner {
   updatedAt       DateTime  @updatedAt
 }
 
-model PipelineContact {
-  id             String    @id @default(cuid())
-  name           String
-  email          String?
-  phone          String?
-  mailingAddress String?
-  occupation     String?
-  birthday       DateTime? @db.Date
-  stage          String?
-  loanAmount     Float?
-  notes          Note[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+model Note {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+  person    Person?  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId  String?
 }
 
-model Note {
-  id                String           @id @default(cuid())
-  body              String
-  createdAt         DateTime         @default(now())
-  referralPartner   ReferralPartner? @relation(fields: [referralPartnerId], references: [id], onDelete: Cascade)
-  referralPartnerId String?
-  pipelineContact   PipelineContact? @relation(fields: [pipelineContactId], references: [id], onDelete: Cascade)
-  pipelineContactId String?
+model DailyActivity {
+  id                 String            @id @default(cuid())
+  date               DateTime          @unique @db.Date
+  likes              Int               @default(0)
+  comments           Int               @default(0)
+  connectionRequests Int               @default(0)
+  dms                Int               @default(0)
+  posts              Int               @default(0)
+  followUps          Int               @default(0)
+  newLeads           Int               @default(0)
+  creditPulls        Int               @default(0)
+  exerciseMinutes    Int               @default(0)
+  readingMinutes     Int               @default(0)
+  conversationLogs   ConversationLog[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model ConversationLog {
+  id              String        @id @default(cuid())
+  dailyActivity   DailyActivity @relation(fields: [dailyActivityId], references: [id], onDelete: Cascade)
+  dailyActivityId String
+  slot            Int           @default(0)
+  contactName     String
+  tags            String[]
+  personId        String?
+  createdAt       DateTime      @default(now())
+}
+
+model FaceToFaceMeeting {
+  id          String   @id @default(cuid())
+  contactName String
+  date        DateTime @db.Date
+  createdAt   DateTime @default(now())
+}
+
+model NetworkingEvent {
+  id        String   @id @default(cuid())
+  eventName String
+  date      DateTime @db.Date
+  createdAt DateTime @default(now())
 }

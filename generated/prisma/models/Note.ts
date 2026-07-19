@@ -28,24 +28,21 @@ export type NoteMinAggregateOutputType = {
   id: string | null
   body: string | null
   createdAt: Date | null
-  referralPartnerId: string | null
-  pipelineContactId: string | null
+  personId: string | null
 }
 
 export type NoteMaxAggregateOutputType = {
   id: string | null
   body: string | null
   createdAt: Date | null
-  referralPartnerId: string | null
-  pipelineContactId: string | null
+  personId: string | null
 }
 
 export type NoteCountAggregateOutputType = {
   id: number
   body: number
   createdAt: number
-  referralPartnerId: number
-  pipelineContactId: number
+  personId: number
   _all: number
 }
 
@@ -54,24 +51,21 @@ export type NoteMinAggregateInputType = {
   id?: true
   body?: true
   createdAt?: true
-  referralPartnerId?: true
-  pipelineContactId?: true
+  personId?: true
 }
 
 export type NoteMaxAggregateInputType = {
   id?: true
   body?: true
   createdAt?: true
-  referralPartnerId?: true
-  pipelineContactId?: true
+  personId?: true
 }
 
 export type NoteCountAggregateInputType = {
   id?: true
   body?: true
   createdAt?: true
-  referralPartnerId?: true
-  pipelineContactId?: true
+  personId?: true
   _all?: true
 }
 
@@ -151,8 +145,7 @@ export type NoteGroupByOutputType = {
   id: string
   body: string
   createdAt: Date
-  referralPartnerId: string | null
-  pipelineContactId: string | null
+  personId: string | null
   _count: NoteCountAggregateOutputType | null
   _min: NoteMinAggregateOutputType | null
   _max: NoteMaxAggregateOutputType | null
@@ -180,20 +173,16 @@ export type NoteWhereInput = {
   id?: Prisma.StringFilter<"Note"> | string
   body?: Prisma.StringFilter<"Note"> | string
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
-  referralPartnerId?: Prisma.StringNullableFilter<"Note"> | string | null
-  pipelineContactId?: Prisma.StringNullableFilter<"Note"> | string | null
-  referralPartner?: Prisma.XOR<Prisma.ReferralPartnerNullableScalarRelationFilter, Prisma.ReferralPartnerWhereInput> | null
-  pipelineContact?: Prisma.XOR<Prisma.PipelineContactNullableScalarRelationFilter, Prisma.PipelineContactWhereInput> | null
+  personId?: Prisma.StringNullableFilter<"Note"> | string | null
+  person?: Prisma.XOR<Prisma.PersonNullableScalarRelationFilter, Prisma.PersonWhereInput> | null
 }
 
 export type NoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referralPartnerId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pipelineContactId?: Prisma.SortOrderInput | Prisma.SortOrder
-  referralPartner?: Prisma.ReferralPartnerOrderByWithRelationInput
-  pipelineContact?: Prisma.PipelineContactOrderByWithRelationInput
+  personId?: Prisma.SortOrderInput | Prisma.SortOrder
+  person?: Prisma.PersonOrderByWithRelationInput
 }
 
 export type NoteWhereUniqueInput = Prisma.AtLeast<{
@@ -203,18 +192,15 @@ export type NoteWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.NoteWhereInput | Prisma.NoteWhereInput[]
   body?: Prisma.StringFilter<"Note"> | string
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
-  referralPartnerId?: Prisma.StringNullableFilter<"Note"> | string | null
-  pipelineContactId?: Prisma.StringNullableFilter<"Note"> | string | null
-  referralPartner?: Prisma.XOR<Prisma.ReferralPartnerNullableScalarRelationFilter, Prisma.ReferralPartnerWhereInput> | null
-  pipelineContact?: Prisma.XOR<Prisma.PipelineContactNullableScalarRelationFilter, Prisma.PipelineContactWhereInput> | null
+  personId?: Prisma.StringNullableFilter<"Note"> | string | null
+  person?: Prisma.XOR<Prisma.PersonNullableScalarRelationFilter, Prisma.PersonWhereInput> | null
 }, "id">
 
 export type NoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referralPartnerId?: Prisma.SortOrderInput | Prisma.SortOrder
-  pipelineContactId?: Prisma.SortOrderInput | Prisma.SortOrder
+  personId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NoteCountOrderByAggregateInput
   _max?: Prisma.NoteMaxOrderByAggregateInput
   _min?: Prisma.NoteMinOrderByAggregateInput
@@ -227,48 +213,42 @@ export type NoteScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Note"> | string
   body?: Prisma.StringWithAggregatesFilter<"Note"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Note"> | Date | string
-  referralPartnerId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
-  pipelineContactId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
+  personId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
 }
 
 export type NoteCreateInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  referralPartner?: Prisma.ReferralPartnerCreateNestedOneWithoutNotesInput
-  pipelineContact?: Prisma.PipelineContactCreateNestedOneWithoutNotesInput
+  person?: Prisma.PersonCreateNestedOneWithoutNotesInput
 }
 
 export type NoteUncheckedCreateInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  referralPartnerId?: string | null
-  pipelineContactId?: string | null
+  personId?: string | null
 }
 
 export type NoteUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartner?: Prisma.ReferralPartnerUpdateOneWithoutNotesNestedInput
-  pipelineContact?: Prisma.PipelineContactUpdateOneWithoutNotesNestedInput
+  person?: Prisma.PersonUpdateOneWithoutNotesNestedInput
 }
 
 export type NoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pipelineContactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NoteCreateManyInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  referralPartnerId?: string | null
-  pipelineContactId?: string | null
+  personId?: string | null
 }
 
 export type NoteUpdateManyMutationInput = {
@@ -281,8 +261,7 @@ export type NoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pipelineContactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NoteListRelationFilter = {
@@ -299,148 +278,101 @@ export type NoteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referralPartnerId?: Prisma.SortOrder
-  pipelineContactId?: Prisma.SortOrder
+  personId?: Prisma.SortOrder
 }
 
 export type NoteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referralPartnerId?: Prisma.SortOrder
-  pipelineContactId?: Prisma.SortOrder
+  personId?: Prisma.SortOrder
 }
 
 export type NoteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   body?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referralPartnerId?: Prisma.SortOrder
-  pipelineContactId?: Prisma.SortOrder
+  personId?: Prisma.SortOrder
 }
 
-export type NoteCreateNestedManyWithoutReferralPartnerInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput> | Prisma.NoteCreateWithoutReferralPartnerInput[] | Prisma.NoteUncheckedCreateWithoutReferralPartnerInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutReferralPartnerInput | Prisma.NoteCreateOrConnectWithoutReferralPartnerInput[]
-  createMany?: Prisma.NoteCreateManyReferralPartnerInputEnvelope
+export type NoteCreateNestedManyWithoutPersonInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput> | Prisma.NoteCreateWithoutPersonInput[] | Prisma.NoteUncheckedCreateWithoutPersonInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPersonInput | Prisma.NoteCreateOrConnectWithoutPersonInput[]
+  createMany?: Prisma.NoteCreateManyPersonInputEnvelope
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
 }
 
-export type NoteUncheckedCreateNestedManyWithoutReferralPartnerInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput> | Prisma.NoteCreateWithoutReferralPartnerInput[] | Prisma.NoteUncheckedCreateWithoutReferralPartnerInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutReferralPartnerInput | Prisma.NoteCreateOrConnectWithoutReferralPartnerInput[]
-  createMany?: Prisma.NoteCreateManyReferralPartnerInputEnvelope
+export type NoteUncheckedCreateNestedManyWithoutPersonInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput> | Prisma.NoteCreateWithoutPersonInput[] | Prisma.NoteUncheckedCreateWithoutPersonInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPersonInput | Prisma.NoteCreateOrConnectWithoutPersonInput[]
+  createMany?: Prisma.NoteCreateManyPersonInputEnvelope
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
 }
 
-export type NoteUpdateManyWithoutReferralPartnerNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput> | Prisma.NoteCreateWithoutReferralPartnerInput[] | Prisma.NoteUncheckedCreateWithoutReferralPartnerInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutReferralPartnerInput | Prisma.NoteCreateOrConnectWithoutReferralPartnerInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutReferralPartnerInput | Prisma.NoteUpsertWithWhereUniqueWithoutReferralPartnerInput[]
-  createMany?: Prisma.NoteCreateManyReferralPartnerInputEnvelope
+export type NoteUpdateManyWithoutPersonNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput> | Prisma.NoteCreateWithoutPersonInput[] | Prisma.NoteUncheckedCreateWithoutPersonInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPersonInput | Prisma.NoteCreateOrConnectWithoutPersonInput[]
+  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutPersonInput | Prisma.NoteUpsertWithWhereUniqueWithoutPersonInput[]
+  createMany?: Prisma.NoteCreateManyPersonInputEnvelope
   set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutReferralPartnerInput | Prisma.NoteUpdateWithWhereUniqueWithoutReferralPartnerInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutReferralPartnerInput | Prisma.NoteUpdateManyWithWhereWithoutReferralPartnerInput[]
+  update?: Prisma.NoteUpdateWithWhereUniqueWithoutPersonInput | Prisma.NoteUpdateWithWhereUniqueWithoutPersonInput[]
+  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutPersonInput | Prisma.NoteUpdateManyWithWhereWithoutPersonInput[]
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
-export type NoteUncheckedUpdateManyWithoutReferralPartnerNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput> | Prisma.NoteCreateWithoutReferralPartnerInput[] | Prisma.NoteUncheckedCreateWithoutReferralPartnerInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutReferralPartnerInput | Prisma.NoteCreateOrConnectWithoutReferralPartnerInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutReferralPartnerInput | Prisma.NoteUpsertWithWhereUniqueWithoutReferralPartnerInput[]
-  createMany?: Prisma.NoteCreateManyReferralPartnerInputEnvelope
+export type NoteUncheckedUpdateManyWithoutPersonNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput> | Prisma.NoteCreateWithoutPersonInput[] | Prisma.NoteUncheckedCreateWithoutPersonInput[]
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPersonInput | Prisma.NoteCreateOrConnectWithoutPersonInput[]
+  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutPersonInput | Prisma.NoteUpsertWithWhereUniqueWithoutPersonInput[]
+  createMany?: Prisma.NoteCreateManyPersonInputEnvelope
   set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
   connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutReferralPartnerInput | Prisma.NoteUpdateWithWhereUniqueWithoutReferralPartnerInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutReferralPartnerInput | Prisma.NoteUpdateManyWithWhereWithoutReferralPartnerInput[]
+  update?: Prisma.NoteUpdateWithWhereUniqueWithoutPersonInput | Prisma.NoteUpdateWithWhereUniqueWithoutPersonInput[]
+  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutPersonInput | Prisma.NoteUpdateManyWithWhereWithoutPersonInput[]
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
-export type NoteCreateNestedManyWithoutPipelineContactInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput> | Prisma.NoteCreateWithoutPipelineContactInput[] | Prisma.NoteUncheckedCreateWithoutPipelineContactInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPipelineContactInput | Prisma.NoteCreateOrConnectWithoutPipelineContactInput[]
-  createMany?: Prisma.NoteCreateManyPipelineContactInputEnvelope
-  connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-}
-
-export type NoteUncheckedCreateNestedManyWithoutPipelineContactInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput> | Prisma.NoteCreateWithoutPipelineContactInput[] | Prisma.NoteUncheckedCreateWithoutPipelineContactInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPipelineContactInput | Prisma.NoteCreateOrConnectWithoutPipelineContactInput[]
-  createMany?: Prisma.NoteCreateManyPipelineContactInputEnvelope
-  connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-}
-
-export type NoteUpdateManyWithoutPipelineContactNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput> | Prisma.NoteCreateWithoutPipelineContactInput[] | Prisma.NoteUncheckedCreateWithoutPipelineContactInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPipelineContactInput | Prisma.NoteCreateOrConnectWithoutPipelineContactInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutPipelineContactInput | Prisma.NoteUpsertWithWhereUniqueWithoutPipelineContactInput[]
-  createMany?: Prisma.NoteCreateManyPipelineContactInputEnvelope
-  set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutPipelineContactInput | Prisma.NoteUpdateWithWhereUniqueWithoutPipelineContactInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutPipelineContactInput | Prisma.NoteUpdateManyWithWhereWithoutPipelineContactInput[]
-  deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
-}
-
-export type NoteUncheckedUpdateManyWithoutPipelineContactNestedInput = {
-  create?: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput> | Prisma.NoteCreateWithoutPipelineContactInput[] | Prisma.NoteUncheckedCreateWithoutPipelineContactInput[]
-  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutPipelineContactInput | Prisma.NoteCreateOrConnectWithoutPipelineContactInput[]
-  upsert?: Prisma.NoteUpsertWithWhereUniqueWithoutPipelineContactInput | Prisma.NoteUpsertWithWhereUniqueWithoutPipelineContactInput[]
-  createMany?: Prisma.NoteCreateManyPipelineContactInputEnvelope
-  set?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  disconnect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  delete?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  connect?: Prisma.NoteWhereUniqueInput | Prisma.NoteWhereUniqueInput[]
-  update?: Prisma.NoteUpdateWithWhereUniqueWithoutPipelineContactInput | Prisma.NoteUpdateWithWhereUniqueWithoutPipelineContactInput[]
-  updateMany?: Prisma.NoteUpdateManyWithWhereWithoutPipelineContactInput | Prisma.NoteUpdateManyWithWhereWithoutPipelineContactInput[]
-  deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
-}
-
-export type NoteCreateWithoutReferralPartnerInput = {
+export type NoteCreateWithoutPersonInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  pipelineContact?: Prisma.PipelineContactCreateNestedOneWithoutNotesInput
 }
 
-export type NoteUncheckedCreateWithoutReferralPartnerInput = {
+export type NoteUncheckedCreateWithoutPersonInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  pipelineContactId?: string | null
 }
 
-export type NoteCreateOrConnectWithoutReferralPartnerInput = {
+export type NoteCreateOrConnectWithoutPersonInput = {
   where: Prisma.NoteWhereUniqueInput
-  create: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput>
 }
 
-export type NoteCreateManyReferralPartnerInputEnvelope = {
-  data: Prisma.NoteCreateManyReferralPartnerInput | Prisma.NoteCreateManyReferralPartnerInput[]
+export type NoteCreateManyPersonInputEnvelope = {
+  data: Prisma.NoteCreateManyPersonInput | Prisma.NoteCreateManyPersonInput[]
   skipDuplicates?: boolean
 }
 
-export type NoteUpsertWithWhereUniqueWithoutReferralPartnerInput = {
+export type NoteUpsertWithWhereUniqueWithoutPersonInput = {
   where: Prisma.NoteWhereUniqueInput
-  update: Prisma.XOR<Prisma.NoteUpdateWithoutReferralPartnerInput, Prisma.NoteUncheckedUpdateWithoutReferralPartnerInput>
-  create: Prisma.XOR<Prisma.NoteCreateWithoutReferralPartnerInput, Prisma.NoteUncheckedCreateWithoutReferralPartnerInput>
+  update: Prisma.XOR<Prisma.NoteUpdateWithoutPersonInput, Prisma.NoteUncheckedUpdateWithoutPersonInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutPersonInput, Prisma.NoteUncheckedCreateWithoutPersonInput>
 }
 
-export type NoteUpdateWithWhereUniqueWithoutReferralPartnerInput = {
+export type NoteUpdateWithWhereUniqueWithoutPersonInput = {
   where: Prisma.NoteWhereUniqueInput
-  data: Prisma.XOR<Prisma.NoteUpdateWithoutReferralPartnerInput, Prisma.NoteUncheckedUpdateWithoutReferralPartnerInput>
+  data: Prisma.XOR<Prisma.NoteUpdateWithoutPersonInput, Prisma.NoteUncheckedUpdateWithoutPersonInput>
 }
 
-export type NoteUpdateManyWithWhereWithoutReferralPartnerInput = {
+export type NoteUpdateManyWithWhereWithoutPersonInput = {
   where: Prisma.NoteScalarWhereInput
-  data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutReferralPartnerInput>
+  data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutPersonInput>
 }
 
 export type NoteScalarWhereInput = {
@@ -450,104 +382,31 @@ export type NoteScalarWhereInput = {
   id?: Prisma.StringFilter<"Note"> | string
   body?: Prisma.StringFilter<"Note"> | string
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
-  referralPartnerId?: Prisma.StringNullableFilter<"Note"> | string | null
-  pipelineContactId?: Prisma.StringNullableFilter<"Note"> | string | null
+  personId?: Prisma.StringNullableFilter<"Note"> | string | null
 }
 
-export type NoteCreateWithoutPipelineContactInput = {
+export type NoteCreateManyPersonInput = {
   id?: string
   body: string
   createdAt?: Date | string
-  referralPartner?: Prisma.ReferralPartnerCreateNestedOneWithoutNotesInput
 }
 
-export type NoteUncheckedCreateWithoutPipelineContactInput = {
-  id?: string
-  body: string
-  createdAt?: Date | string
-  referralPartnerId?: string | null
-}
-
-export type NoteCreateOrConnectWithoutPipelineContactInput = {
-  where: Prisma.NoteWhereUniqueInput
-  create: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput>
-}
-
-export type NoteCreateManyPipelineContactInputEnvelope = {
-  data: Prisma.NoteCreateManyPipelineContactInput | Prisma.NoteCreateManyPipelineContactInput[]
-  skipDuplicates?: boolean
-}
-
-export type NoteUpsertWithWhereUniqueWithoutPipelineContactInput = {
-  where: Prisma.NoteWhereUniqueInput
-  update: Prisma.XOR<Prisma.NoteUpdateWithoutPipelineContactInput, Prisma.NoteUncheckedUpdateWithoutPipelineContactInput>
-  create: Prisma.XOR<Prisma.NoteCreateWithoutPipelineContactInput, Prisma.NoteUncheckedCreateWithoutPipelineContactInput>
-}
-
-export type NoteUpdateWithWhereUniqueWithoutPipelineContactInput = {
-  where: Prisma.NoteWhereUniqueInput
-  data: Prisma.XOR<Prisma.NoteUpdateWithoutPipelineContactInput, Prisma.NoteUncheckedUpdateWithoutPipelineContactInput>
-}
-
-export type NoteUpdateManyWithWhereWithoutPipelineContactInput = {
-  where: Prisma.NoteScalarWhereInput
-  data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutPipelineContactInput>
-}
-
-export type NoteCreateManyReferralPartnerInput = {
-  id?: string
-  body: string
-  createdAt?: Date | string
-  pipelineContactId?: string | null
-}
-
-export type NoteUpdateWithoutReferralPartnerInput = {
+export type NoteUpdateWithoutPersonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pipelineContact?: Prisma.PipelineContactUpdateOneWithoutNotesNestedInput
 }
 
-export type NoteUncheckedUpdateWithoutReferralPartnerInput = {
+export type NoteUncheckedUpdateWithoutPersonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pipelineContactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type NoteUncheckedUpdateManyWithoutReferralPartnerInput = {
+export type NoteUncheckedUpdateManyWithoutPersonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  pipelineContactId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type NoteCreateManyPipelineContactInput = {
-  id?: string
-  body: string
-  createdAt?: Date | string
-  referralPartnerId?: string | null
-}
-
-export type NoteUpdateWithoutPipelineContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  body?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartner?: Prisma.ReferralPartnerUpdateOneWithoutNotesNestedInput
-}
-
-export type NoteUncheckedUpdateWithoutPipelineContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  body?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type NoteUncheckedUpdateManyWithoutPipelineContactInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  body?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referralPartnerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -556,66 +415,54 @@ export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   body?: boolean
   createdAt?: boolean
-  referralPartnerId?: boolean
-  pipelineContactId?: boolean
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  personId?: boolean
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   body?: boolean
   createdAt?: boolean
-  referralPartnerId?: boolean
-  pipelineContactId?: boolean
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  personId?: boolean
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   body?: boolean
   createdAt?: boolean
-  referralPartnerId?: boolean
-  pipelineContactId?: boolean
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  personId?: boolean
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectScalar = {
   id?: boolean
   body?: boolean
   createdAt?: boolean
-  referralPartnerId?: boolean
-  pipelineContactId?: boolean
+  personId?: boolean
 }
 
-export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "body" | "createdAt" | "referralPartnerId" | "pipelineContactId", ExtArgs["result"]["note"]>
+export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "body" | "createdAt" | "personId", ExtArgs["result"]["note"]>
 export type NoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }
 export type NoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }
 export type NoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  referralPartner?: boolean | Prisma.Note$referralPartnerArgs<ExtArgs>
-  pipelineContact?: boolean | Prisma.Note$pipelineContactArgs<ExtArgs>
+  person?: boolean | Prisma.Note$personArgs<ExtArgs>
 }
 
 export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Note"
   objects: {
-    referralPartner: Prisma.$ReferralPartnerPayload<ExtArgs> | null
-    pipelineContact: Prisma.$PipelineContactPayload<ExtArgs> | null
+    person: Prisma.$PersonPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     body: string
     createdAt: Date
-    referralPartnerId: string | null
-    pipelineContactId: string | null
+    personId: string | null
   }, ExtArgs["result"]["note"]>
   composites: {}
 }
@@ -1010,8 +857,7 @@ readonly fields: NoteFieldRefs;
  */
 export interface Prisma__NoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  referralPartner<T extends Prisma.Note$referralPartnerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$referralPartnerArgs<ExtArgs>>): Prisma.Prisma__ReferralPartnerClient<runtime.Types.Result.GetResult<Prisma.$ReferralPartnerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  pipelineContact<T extends Prisma.Note$pipelineContactArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$pipelineContactArgs<ExtArgs>>): Prisma.Prisma__PipelineContactClient<runtime.Types.Result.GetResult<Prisma.$PipelineContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  person<T extends Prisma.Note$personArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$personArgs<ExtArgs>>): Prisma.Prisma__PersonClient<runtime.Types.Result.GetResult<Prisma.$PersonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1044,8 +890,7 @@ export interface NoteFieldRefs {
   readonly id: Prisma.FieldRef<"Note", 'String'>
   readonly body: Prisma.FieldRef<"Note", 'String'>
   readonly createdAt: Prisma.FieldRef<"Note", 'DateTime'>
-  readonly referralPartnerId: Prisma.FieldRef<"Note", 'String'>
-  readonly pipelineContactId: Prisma.FieldRef<"Note", 'String'>
+  readonly personId: Prisma.FieldRef<"Note", 'String'>
 }
     
 
@@ -1447,41 +1292,22 @@ export type NoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Note.referralPartner
+ * Note.person
  */
-export type Note$referralPartnerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Note$personArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ReferralPartner
+   * Select specific fields to fetch from the Person
    */
-  select?: Prisma.ReferralPartnerSelect<ExtArgs> | null
+  select?: Prisma.PersonSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ReferralPartner
+   * Omit specific fields from the Person
    */
-  omit?: Prisma.ReferralPartnerOmit<ExtArgs> | null
+  omit?: Prisma.PersonOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReferralPartnerInclude<ExtArgs> | null
-  where?: Prisma.ReferralPartnerWhereInput
-}
-
-/**
- * Note.pipelineContact
- */
-export type Note$pipelineContactArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PipelineContact
-   */
-  select?: Prisma.PipelineContactSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PipelineContact
-   */
-  omit?: Prisma.PipelineContactOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PipelineContactInclude<ExtArgs> | null
-  where?: Prisma.PipelineContactWhereInput
+  include?: Prisma.PersonInclude<ExtArgs> | null
+  where?: Prisma.PersonWhereInput
 }
 
 /**

@@ -52,9 +52,12 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   DailyLog: 'DailyLog',
-  ReferralPartner: 'ReferralPartner',
-  PipelineContact: 'PipelineContact',
-  Note: 'Note'
+  Person: 'Person',
+  Note: 'Note',
+  DailyActivity: 'DailyActivity',
+  ConversationLog: 'ConversationLog',
+  FaceToFaceMeeting: 'FaceToFaceMeeting',
+  NetworkingEvent: 'NetworkingEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -84,50 +87,89 @@ export const DailyLogScalarFieldEnum = {
 export type DailyLogScalarFieldEnum = (typeof DailyLogScalarFieldEnum)[keyof typeof DailyLogScalarFieldEnum]
 
 
-export const ReferralPartnerScalarFieldEnum = {
+export const PersonScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   phone: 'phone',
   birthday: 'birthday',
   role: 'role',
+  mailingAddress: 'mailingAddress',
   markets: 'markets',
   specializations: 'specializations',
+  tags: 'tags',
+  stage: 'stage',
+  loanAmount: 'loanAmount',
   followUpDate: 'followUpDate',
   lastContactedAt: 'lastContactedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ReferralPartnerScalarFieldEnum = (typeof ReferralPartnerScalarFieldEnum)[keyof typeof ReferralPartnerScalarFieldEnum]
-
-
-export const PipelineContactScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  phone: 'phone',
-  mailingAddress: 'mailingAddress',
-  occupation: 'occupation',
-  birthday: 'birthday',
-  stage: 'stage',
-  loanAmount: 'loanAmount',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PipelineContactScalarFieldEnum = (typeof PipelineContactScalarFieldEnum)[keyof typeof PipelineContactScalarFieldEnum]
+export type PersonScalarFieldEnum = (typeof PersonScalarFieldEnum)[keyof typeof PersonScalarFieldEnum]
 
 
 export const NoteScalarFieldEnum = {
   id: 'id',
   body: 'body',
   createdAt: 'createdAt',
-  referralPartnerId: 'referralPartnerId',
-  pipelineContactId: 'pipelineContactId'
+  personId: 'personId'
 } as const
 
 export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const DailyActivityScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  likes: 'likes',
+  comments: 'comments',
+  connectionRequests: 'connectionRequests',
+  dms: 'dms',
+  posts: 'posts',
+  followUps: 'followUps',
+  newLeads: 'newLeads',
+  creditPulls: 'creditPulls',
+  exerciseMinutes: 'exerciseMinutes',
+  readingMinutes: 'readingMinutes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DailyActivityScalarFieldEnum = (typeof DailyActivityScalarFieldEnum)[keyof typeof DailyActivityScalarFieldEnum]
+
+
+export const ConversationLogScalarFieldEnum = {
+  id: 'id',
+  dailyActivityId: 'dailyActivityId',
+  slot: 'slot',
+  contactName: 'contactName',
+  tags: 'tags',
+  personId: 'personId',
+  createdAt: 'createdAt'
+} as const
+
+export type ConversationLogScalarFieldEnum = (typeof ConversationLogScalarFieldEnum)[keyof typeof ConversationLogScalarFieldEnum]
+
+
+export const FaceToFaceMeetingScalarFieldEnum = {
+  id: 'id',
+  contactName: 'contactName',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type FaceToFaceMeetingScalarFieldEnum = (typeof FaceToFaceMeetingScalarFieldEnum)[keyof typeof FaceToFaceMeetingScalarFieldEnum]
+
+
+export const NetworkingEventScalarFieldEnum = {
+  id: 'id',
+  eventName: 'eventName',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type NetworkingEventScalarFieldEnum = (typeof NetworkingEventScalarFieldEnum)[keyof typeof NetworkingEventScalarFieldEnum]
 
 
 export const SortOrder = {
