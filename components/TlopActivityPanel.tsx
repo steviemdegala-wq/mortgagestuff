@@ -90,8 +90,6 @@ function Checkbox({
 
 export default function TlopActivityPanel() {
   const day = new Date().getDay();
-  const isSunday = day === 0;
-  const isSaturday = day === 6;
   const theme = DAY_THEMES[day];
 
   const [activity, setActivity] = useState<Activity | null>(null);
@@ -109,10 +107,7 @@ export default function TlopActivityPanel() {
       .finally(() => setLoading(false));
   }, [dateStr]);
 
-  useEffect(() => {
-    if (!isSunday) load();
-    else setLoading(false);
-  }, [isSunday, load]);
+  useEffect(() => { load(); }, [load]);
 
   function update(field: string, value: number) {
     setActivity((prev) => (prev ? { ...prev, [field]: value } : null));
@@ -145,8 +140,6 @@ export default function TlopActivityPanel() {
     }
   }
 
-  if (isSunday) return null;
-
   const a: Activity = activity ?? {
     likes: 0, comments: 0, connectionRequests: 0, dms: 0, posts: 0,
     followUps: 0, newLeads: 0, creditPulls: 0, exerciseMinutes: 0, readingMinutes: 0,
@@ -159,7 +152,7 @@ export default function TlopActivityPanel() {
           <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
             Today&apos;s Activity
           </h2>
-          {!isSaturday && theme && (
+          {theme && (
             <p className="text-xs text-gray-400 mt-0.5">Today: {theme}</p>
           )}
         </div>

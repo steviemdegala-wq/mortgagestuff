@@ -49,10 +49,6 @@ function emptySlot(): SlotState {
   };
 }
 
-function isSunday() {
-  return new Date().getDay() === 0;
-}
-
 function todayDateStr() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -65,7 +61,6 @@ export default function ConversationTracker() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [slots, setSlots] = useState<SlotState[]>([]);
-  const sunday = isSunday();
   const searchTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
   const dateStr = todayDateStr();
@@ -108,10 +103,7 @@ export default function ConversationTracker() {
     setLoading(false);
   }, [dateStr]);
 
-  useEffect(() => {
-    if (!sunday) load();
-    else setLoading(false);
-  }, [sunday, load]);
+  useEffect(() => { load(); }, [load]);
 
   function handleCircleClick(index: number) {
     const newCount = index + 1 === count ? index : index + 1;
@@ -271,18 +263,14 @@ export default function ConversationTracker() {
     <div className="border border-gray-200 rounded-lg p-6">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Today</h2>
-        {!sunday && !loading && (
+        {!loading && (
           <span className="text-sm text-gray-500">
             {count} / 10 &nbsp;&middot;&nbsp; {percentage}%
           </span>
         )}
       </div>
 
-      {sunday ? (
-        <div className="py-6 text-center">
-          <p className="text-gray-400 text-sm">Day off. See you Monday.</p>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div className="flex gap-2">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="w-8 h-8 rounded-full border-2 border-gray-100 animate-pulse" />
