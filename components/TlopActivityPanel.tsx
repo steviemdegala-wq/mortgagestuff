@@ -133,7 +133,7 @@ export default function TlopActivityPanel() {
       const res = await fetch("/api/daily-activity", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: dateStr, ...a }),
+        body: JSON.stringify({ ...a, date: dateStr }),
       });
       const data = await res.json();
       setActivity(data);
