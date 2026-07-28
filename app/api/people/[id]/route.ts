@@ -8,7 +8,10 @@ export async function GET(
   const { id } = await params;
   const person = await prisma.person.findUnique({
     where: { id },
-    include: { notes: { orderBy: { createdAt: "desc" } } },
+    include: {
+      notes: { orderBy: { createdAt: "desc" } },
+      faceToFaceMeetings: { orderBy: { date: "desc" } },
+    },
   });
   if (!person) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(person);
@@ -38,7 +41,10 @@ export async function PATCH(
       ...(data.followUpDate !== undefined && { followUpDate: data.followUpDate ? new Date(data.followUpDate) : null }),
       ...(data.lastContactedAt !== undefined && { lastContactedAt: data.lastContactedAt ? new Date(data.lastContactedAt) : null }),
     },
-    include: { notes: { orderBy: { createdAt: "desc" } } },
+    include: {
+      notes: { orderBy: { createdAt: "desc" } },
+      faceToFaceMeetings: { orderBy: { date: "desc" } },
+    },
   });
 
   return NextResponse.json(updated);

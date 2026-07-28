@@ -156,6 +156,7 @@ export const FaceToFaceMeetingScalarFieldEnum = {
   id: 'id',
   contactName: 'contactName',
   date: 'date',
+  personId: 'personId',
   createdAt: 'createdAt'
 } as const
 

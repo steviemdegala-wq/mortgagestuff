@@ -11,6 +11,7 @@ const STAGES = ["New Lead", "Pre-Qualified", "Application", "Processing", "Under
 const PRESET_TAGS = ["Referral Partner", "Pipeline", "Past Client", "COI", "Realtor", "Builder", "Attorney", "Financial Advisor", "HR Manager", "Other Professional"];
 
 interface Note { id: string; body: string; createdAt: string; }
+interface FaceToFaceMeeting { id: string; contactName: string; date: string; }
 
 interface Person {
   id: string;
@@ -28,6 +29,7 @@ interface Person {
   followUpDate: string | null;
   lastContactedAt: string | null;
   notes: Note[];
+  faceToFaceMeetings: FaceToFaceMeeting[];
   createdAt: string;
 }
 
@@ -283,6 +285,19 @@ export default function PersonProfilePage() {
           </div>
         </div>
       </div>
+
+      {person.faceToFaceMeetings.length > 0 && (
+        <div className="border border-gray-200 rounded-lg p-6">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Face to Face Meetings</h3>
+          <div className="space-y-2">
+            {person.faceToFaceMeetings.map((m) => (
+              <div key={m.id} className="flex items-center justify-between">
+                <span className="text-sm text-gray-700">{formatDate(m.date)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="border border-gray-200 rounded-lg p-6">
         <NoteSection notes={person.notes} onAdd={handleAddNote} onDelete={handleDeleteNote} onEdit={handleEditNote} />

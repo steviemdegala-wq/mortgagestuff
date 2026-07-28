@@ -54,7 +54,20 @@ function todayDateStr() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
+function shiftDate(dateStr: string, days: number): string {
+  const d = new Date(dateStr + "T12:00:00");
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDateLabel(dateStr: string): string {
+  if (dateStr === todayDateStr()) return "Today";
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+
 export default function ConversationTracker() {
+  const [selectedDate, setSelectedDate] = useState(todayDateStr());
   const [savedCount, setSavedCount] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -63,11 +76,12 @@ export default function ConversationTracker() {
   const [slots, setSlots] = useState<SlotState[]>([]);
   const searchTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
-  const dateStr = todayDateStr();
+  const dateStr = selectedDate;
+  const isToday = selectedDate === todayDateStr();
 
   const load = useCallback(async () => {
     const [logRes, activityRes] = await Promise.all([
-      fetch("/api/daily-log").then((r) => r.json()),
+      fetch(`/api/daily-log?date=${dateStr}`).then((r) => r.json()),
       fetch(`/api/daily-activity?date=${dateStr}`).then((r) => r.json()),
     ]);
     const c = logRes.count ?? 0;
@@ -103,7 +117,13 @@ export default function ConversationTracker() {
     setLoading(false);
   }, [dateStr]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    setLoading(true);
+    setCount(0);
+    setSavedCount(0);
+    setSlots([]);
+    load();
+  }, [load]);
 
   function handleCircleClick(index: number) {
     const newCount = index + 1 === count ? index : index + 1;
@@ -118,7 +138,7 @@ export default function ConversationTracker() {
       const res = await fetch("/api/daily-log", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ count }),
+        body: JSON.stringify({ count, date: dateStr }),
       });
       if (!res.ok) throw new Error("Failed");
       setSavedCount(count);
@@ -262,7 +282,24 @@ export default function ConversationTracker() {
   return (
     <div className="border border-gray-200 rounded-lg p-6">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Today</h2>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSelectedDate((d) => shiftDate(d, -1))}
+            className="w-6 h-6 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-700 transition-colors text-xs"
+            aria-label="Previous day"
+          >
+            &#8249;
+          </button>
+          <h2 className="text-sm font-medium text-gray-700">{formatDateLabel(selectedDate)}</h2>
+          <button
+            onClick={() => !isToday && setSelectedDate((d) => shiftDate(d, 1))}
+            disabled={isToday}
+            className="w-6 h-6 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-700 transition-colors text-xs disabled:opacity-30 disabled:cursor-default"
+            aria-label="Next day"
+          >
+            &#8250;
+          </button>
+        </div>
         {!loading && (
           <span className="text-sm text-gray-500">
             {count} / 10 &nbsp;&middot;&nbsp; {percentage}%

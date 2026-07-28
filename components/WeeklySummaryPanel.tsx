@@ -39,7 +39,7 @@ function todayDateStr() {
 }
 
 function formatDate(dateStr: string) {
-  const d = new Date(dateStr + "T00:00:00");
+  const d = new Date(dateStr.split("T")[0] + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
@@ -50,6 +50,7 @@ export default function WeeklySummaryPanel() {
 
   const [newMeetingName, setNewMeetingName] = useState("");
   const [newMeetingDate, setNewMeetingDate] = useState(todayDateStr());
+  const [newMeetingPersonId, setNewMeetingPersonId] = useState<string | null>(null);
   const [addingMeeting, setAddingMeeting] = useState(false);
   const [meetingSuggestions, setMeetingSuggestions] = useState<PartnerSuggestion[]>([]);
   const [showMeetingSuggestions, setShowMeetingSuggestions] = useState(false);
@@ -75,6 +76,7 @@ export default function WeeklySummaryPanel() {
 
   function handleMeetingNameChange(v: string) {
     setNewMeetingName(v);
+    setNewMeetingPersonId(null);
     if (meetingSearchTimer.current) clearTimeout(meetingSearchTimer.current);
     if (!v.trim()) {
       setMeetingSuggestions([]);
@@ -97,9 +99,10 @@ export default function WeeklySummaryPanel() {
       await fetch("/api/face-to-face", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contactName: newMeetingName.trim(), date: newMeetingDate }),
+        body: JSON.stringify({ contactName: newMeetingName.trim(), date: newMeetingDate, personId: newMeetingPersonId }),
       });
       setNewMeetingName("");
+      setNewMeetingPersonId(null);
       load();
     } finally {
       setAddingMeeting(false);
@@ -230,6 +233,7 @@ export default function WeeklySummaryPanel() {
                     key={p.id}
                     onMouseDown={() => {
                       setNewMeetingName(p.name);
+                      setNewMeetingPersonId(p.id);
                       setShowMeetingSuggestions(false);
                     }}
                     className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-baseline gap-2"
@@ -330,6 +334,7 @@ export default function WeeklySummaryPanel() {
         onCreated={(person) => {
           setShowAddPersonModal(false);
           setNewMeetingName(person.name);
+          setNewMeetingPersonId(person.id);
         }}
       />
     )}

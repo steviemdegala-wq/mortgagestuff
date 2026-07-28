@@ -30,8 +30,9 @@ model Person {
   loanAmount      Float?
   followUpDate    DateTime? @db.Date
   lastContactedAt DateTime?
-  notes           Note[]
-  createdAt       DateTime  @default(now())
+  notes              Note[]
+  faceToFaceMeetings FaceToFaceMeeting[]
+  createdAt          DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
 
@@ -76,6 +77,8 @@ model FaceToFaceMeeting {
   id          String   @id @default(cuid())
   contactName String
   date        DateTime @db.Date
+  personId    String?
+  person      Person?  @relation(fields: [personId], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
 }
 

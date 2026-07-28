@@ -27,13 +27,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { contactName, date: dateParam } = await request.json();
+  const { contactName, date: dateParam, personId } = await request.json();
   if (!contactName?.trim() || !dateParam) {
     return NextResponse.json({ error: "contactName and date required" }, { status: 400 });
   }
   const date = new Date(dateParam + "T00:00:00Z");
   const meeting = await prisma.faceToFaceMeeting.create({
-    data: { contactName: contactName.trim(), date },
+    data: { contactName: contactName.trim(), date, personId: personId ?? null },
   });
   return NextResponse.json(meeting, { status: 201 });
 }
