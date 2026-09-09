@@ -21,6 +21,7 @@ interface Person {
   loanAmount: number | null;
   lastContactedAt: string | null;
   _count: { notes: number };
+  Loan: { id: string; loanAmount: number; loanType: string }[];
 }
 
 function daysSince(dateStr: string): string {

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       ],
     },
     orderBy: { name: "asc" },
-    include: { _count: { select: { notes: true } } },
+    include: { _count: { select: { notes: true } }, Loan: { select: { id: true, loanAmount: true, loanType: true } } },
   });
 
   return NextResponse.json(people);
