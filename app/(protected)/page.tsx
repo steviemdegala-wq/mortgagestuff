@@ -2,6 +2,7 @@ import ConversationTracker from "@/components/ConversationTracker";
 import HistoryPanel from "@/components/HistoryPanel";
 import BirthdayWidget from "@/components/BirthdayWidget";
 import FollowUpWidget from "@/components/FollowUpWidget";
+import OverdueWidget from "@/components/OverdueWidget";
 import TlopActivityPanel from "@/components/TlopActivityPanel";
 import WeeklySummaryPanel from "@/components/WeeklySummaryPanel";
 import DayOfWeekPanel from "@/components/DayOfWeekPanel";
@@ -24,6 +25,7 @@ export default function DashboardPage() {
         </div>
         <div className="space-y-6">
           <FollowUpWidget />
+          <OverdueWidget />
           <BirthdayWidget />
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { randomUUID } from "crypto";
 
 function todayDate() {
-  const now = new Date();
-  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const s = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
 }
 
 export async function POST(
@@ -11,19 +13,49 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const date = todayDate();
 
-  const [person, log] = await Promise.all([
+  // Get or create today's DailyActivity
+  let activity = await prisma.dailyActivity.findUnique({
+    where: { date },
+    include: { ConversationLog: { select: { slot: true } } },
+  });
+
+  if (!activity) {
+    activity = await prisma.dailyActivity.create({
+      data: { id: randomUUID(), date, updatedAt: new Date() },
+      include: { ConversationLog: { select: { slot: true } } },
+    });
+  }
+
+  // Find the next empty slot (0–9), skip if all 10 are filled
+  const usedSlots = new Set(activity.ConversationLog.map((l) => l.slot));
+  const nextSlot = Array.from({ length: 10 }, (_, i) => i).find((i) => !usedSlots.has(i));
+
+  const personName = (await prisma.person.findUnique({ where: { id }, select: { name: true } }))?.name ?? "";
+
+  const [person] = await Promise.all([
     prisma.person.update({
       where: { id },
-      data: { lastContactedAt: new Date() },
-      include: { notes: { orderBy: { createdAt: "desc" } } },
+      data: { lastContactedAt: new Date(), updatedAt: new Date() },
+      include: {
+        Note: { orderBy: { createdAt: "desc" } },
+        Loan: { orderBy: { createdAt: "asc" } },
+      },
     }),
-    prisma.dailyLog.upsert({
-      where: { date: todayDate() },
-      update: { count: { increment: 1 } },
-      create: { date: todayDate(), count: 1 },
-    }),
+    nextSlot !== undefined
+      ? prisma.conversationLog.create({
+          data: {
+            id: randomUUID(),
+            dailyActivityId: activity.id,
+            contactName: personName,
+            personId: id,
+            slot: nextSlot,
+            tags: [],
+          },
+        })
+      : Promise.resolve(null),
   ]);
 
-  return NextResponse.json({ person, dailyCount: log.count });
+  return NextResponse.json({ person, dailyCount: usedSlots.size + (nextSlot !== undefined ? 1 : 0) });
 }

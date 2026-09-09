@@ -22,8 +22,10 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const range = searchParams.get("range") ?? "week";
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Use Pacific time so "today" matches the user's timezone
+  const pacificStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
+  const [py, pm, pd] = pacificStr.split("-").map(Number);
+  const today = new Date(Date.UTC(py, pm - 1, pd));
 
   let start: Date;
   if (range === "week") {
@@ -41,16 +43,20 @@ export async function GET(request: NextRequest) {
 
   const workingDays = getWorkingDaysInRange(start, today);
 
-  const logs = await prisma.dailyLog.findMany({
+  const activities = await prisma.dailyActivity.findMany({
     where: {
       date: { gte: start, lte: today },
+    },
+    include: {
+      ConversationLog: { select: { slot: true } },
     },
   });
 
   const logMap = new Map<string, number>();
-  for (const log of logs) {
-    const key = log.date.toISOString().split("T")[0];
-    logMap.set(key, log.count);
+  for (const activity of activities) {
+    const key = activity.date.toISOString().split("T")[0];
+    const distinctSlots = new Set(activity.ConversationLog.map((l) => l.slot));
+    logMap.set(key, distinctSlots.size);
   }
 
   let completedDays = 0;
