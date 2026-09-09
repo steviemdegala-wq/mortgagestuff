@@ -6,6 +6,7 @@ import Link from "next/link";
 import InlineEdit from "@/components/InlineEdit";
 import TagInput from "@/components/TagInput";
 import NoteSection from "@/components/NoteSection";
+import LoanSection, { Loan } from "@/components/LoanSection";
 
 const STAGES = ["New Lead", "Pre-Qualified", "Application", "Processing", "Underwriting", "Closing", "Funded"];
 const PRESET_TAGS = ["Referral Partner", "Pipeline", "Past Client", "COI", "Realtor", "Builder", "Attorney", "Financial Advisor", "HR Manager", "Other Professional"];
@@ -30,6 +31,7 @@ interface Person {
   lastContactedAt: string | null;
   notes: Note[];
   faceToFaceMeetings: FaceToFaceMeeting[];
+  Loan: Loan[];
   createdAt: string;
 }
 
@@ -108,6 +110,10 @@ export default function PersonProfilePage() {
     setPerson((prev) => prev ? { ...prev, notes: prev.notes.map((n) => n.id === noteId ? updated : n) } : prev);
   }
 
+  function handleLoansChange(loans: Loan[]) {
+    setPerson((prev) => prev ? { ...prev, Loan: loans } : prev);
+  }
+
   async function handleDelete() {
     if (!confirm("Delete this person? This cannot be undone.")) return;
     setDeleting(true);
@@ -118,7 +124,7 @@ export default function PersonProfilePage() {
   if (loading) return <div className="flex items-center justify-center py-16"><p className="text-sm text-gray-400">Loading...</p></div>;
   if (!person) return null;
 
-  const isPipeline = person.tags.includes("Pipeline") || !!person.stage || !!person.loanAmount;
+  const isPipeline = person.tags.includes("Pipeline") || !!person.stage || !!person.loanAmount || (person.Loan?.length ?? 0) > 0;
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -298,6 +304,12 @@ export default function PersonProfilePage() {
           </div>
         </div>
       )}
+
+      <LoanSection
+        contactId={id}
+        loans={person.Loan ?? []}
+        onChange={handleLoansChange}
+      />
 
       <div className="border border-gray-200 rounded-lg p-6">
         <NoteSection notes={person.notes} onAdd={handleAddNote} onDelete={handleDeleteNote} onEdit={handleEditNote} />

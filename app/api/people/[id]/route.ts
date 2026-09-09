@@ -11,6 +11,7 @@ export async function GET(
     include: {
       notes: { orderBy: { createdAt: "desc" } },
       faceToFaceMeetings: { orderBy: { date: "desc" } },
+      Loan: { orderBy: { createdAt: "asc" } },
     },
   });
   if (!person) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -44,6 +45,7 @@ export async function PATCH(
     include: {
       notes: { orderBy: { createdAt: "desc" } },
       faceToFaceMeetings: { orderBy: { date: "desc" } },
+      Loan: { orderBy: { createdAt: "asc" } },
     },
   });
 
