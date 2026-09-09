@@ -309,6 +309,7 @@ export default function PersonProfilePage() {
         contactId={id}
         loans={person.Loan ?? []}
         onChange={handleLoansChange}
+        stage={person.stage}
       />
 
       <div className="border border-gray-200 rounded-lg p-6">

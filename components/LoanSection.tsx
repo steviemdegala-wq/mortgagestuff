@@ -185,9 +185,10 @@ interface Props {
   contactId: string;
   loans: Loan[];
   onChange: (loans: Loan[]) => void;
+  stage?: string | null;
 }
 
-export default function LoanSection({ contactId, loans, onChange }: Props) {
+export default function LoanSection({ contactId, loans, onChange, stage }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -272,7 +273,14 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
           <div key={loan.id} className="border border-gray-100 rounded-lg p-4 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-sm font-medium text-black">{loan.name}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-medium text-black">{loan.name}</p>
+                  {stage && (
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                      {stage}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400">{loan.loanType}</p>
               </div>
               <div className="text-right flex-shrink-0">
