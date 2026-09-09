@@ -10,6 +10,7 @@ interface Partner {
   name: string;
   role: string | null;
   phone: string | null;
+  stage: string | null;
   markets: string[];
   specializations: string[];
   lastContactedAt: string | null;
@@ -71,16 +72,16 @@ export default function PartnersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-black">Referral Partners</h1>
+          <h1 className="text-lg font-semibold text-black">People</h1>
           <p className="text-sm text-gray-400 mt-0.5">
-            {partners.length} {partners.length === 1 ? "partner" : "partners"}
+            {partners.length} {partners.length === 1 ? "person" : "people"}
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-gray-900 transition-colors"
         >
-          Add partner
+          Add person
         </button>
       </div>
 
@@ -166,13 +167,20 @@ export default function PartnersPage() {
                   onClick={() => router.push(`/partners/${partner.id}`)}
                 >
                   <td className="px-4 py-3">
-                    <Link
-                      href={`/partners/${partner.id}`}
-                      className="text-sm font-medium text-black hover:underline underline-offset-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {partner.name}
-                    </Link>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Link
+                        href={`/partners/${partner.id}`}
+                        className="text-sm font-medium text-black hover:underline underline-offset-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {partner.name}
+                      </Link>
+                      {partner.stage && (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          {partner.stage}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">
                     {partner.role ?? <span className="text-gray-300">No role</span>}

@@ -6,12 +6,23 @@ import Link from "next/link";
 import InlineEdit from "@/components/InlineEdit";
 import TagInput from "@/components/TagInput";
 import NoteSection from "@/components/NoteSection";
+import LoanSection, { Loan } from "@/components/LoanSection";
 
 interface Note {
   id: string;
   body: string;
   createdAt: string;
 }
+
+const PIPELINE_STAGES = [
+  "New Lead",
+  "Pre-Qualified",
+  "Application",
+  "Processing",
+  "Underwriting",
+  "Closing",
+  "Funded",
+];
 
 interface Partner {
   id: string;
@@ -20,11 +31,13 @@ interface Partner {
   phone: string | null;
   birthday: string | null;
   role: string | null;
+  stage: string | null;
   markets: string[];
   specializations: string[];
   followUpDate: string | null;
   lastContactedAt: string | null;
-  notes: Note[];
+  Note: Note[];
+  Loan: Loan[];
   createdAt: string;
 }
 
@@ -79,14 +92,12 @@ export default function PartnerProfilePage() {
 
   async function handleAddTag(type: "markets" | "specializations", tag: string) {
     if (!partner) return;
-    const current = partner[type];
-    await patch({ [type]: [...current, tag] });
+    await patch({ [type]: [...partner[type], tag] });
   }
 
   async function handleRemoveTag(type: "markets" | "specializations", tag: string) {
     if (!partner) return;
-    const current = partner[type];
-    await patch({ [type]: current.filter((t) => t !== tag) });
+    await patch({ [type]: partner[type].filter((t) => t !== tag) });
   }
 
   async function handleLogConversation() {
@@ -106,20 +117,18 @@ export default function PartnerProfilePage() {
     const res = await fetch("/api/notes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body, referralPartnerId: id }),
+      body: JSON.stringify({ body, personId: id }),
     });
     const note = await res.json();
     setPartner((prev) =>
-      prev ? { ...prev, notes: [note, ...prev.notes] } : prev
+      prev ? { ...prev, Note: [note, ...prev.Note] } : prev
     );
   }
 
   async function handleDeleteNote(noteId: string) {
     await fetch(`/api/notes/${noteId}`, { method: "DELETE" });
     setPartner((prev) =>
-      prev
-        ? { ...prev, notes: prev.notes.filter((n) => n.id !== noteId) }
-        : prev
+      prev ? { ...prev, Note: prev.Note.filter((n) => n.id !== noteId) } : prev
     );
   }
 
@@ -132,13 +141,17 @@ export default function PartnerProfilePage() {
     const updated = await res.json();
     setPartner((prev) =>
       prev
-        ? { ...prev, notes: prev.notes.map((n) => (n.id === noteId ? updated : n)) }
+        ? { ...prev, Note: prev.Note.map((n) => (n.id === noteId ? updated : n)) }
         : prev
     );
   }
 
+  function handleLoansChange(loans: Loan[]) {
+    setPartner((prev) => prev ? { ...prev, Loan: loans } : prev);
+  }
+
   async function handleDelete() {
-    if (!confirm("Delete this partner? This cannot be undone.")) return;
+    if (!confirm("Delete this person? This cannot be undone.")) return;
     setDeleting(true);
     await fetch(`/api/partners/${id}`, { method: "DELETE" });
     router.push("/partners");
@@ -161,7 +174,7 @@ export default function PartnerProfilePage() {
         href="/partners"
         className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
       >
-        Back to Referral Partners
+        ← Back to People
       </Link>
 
       {/* Header */}
@@ -198,6 +211,25 @@ export default function PartnerProfilePage() {
 
       {/* Fields */}
       <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+        {/* Pipeline stage */}
+        <div className="flex items-start px-4 py-3 gap-4">
+          <span className="text-xs font-medium text-gray-400 w-28 flex-shrink-0 pt-0.5">
+            Pipeline stage
+          </span>
+          <div className="flex-1">
+            <select
+              value={partner.stage ?? ""}
+              onChange={(e) => patch({ stage: e.target.value || null } as Partial<Partner>)}
+              className="border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-gray-400 bg-white text-gray-700 w-48"
+            >
+              <option value="">No stage</option>
+              {PIPELINE_STAGES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {[
           { label: "Role", field: "role", type: "text" as const },
           { label: "Email", field: "email", type: "email" as const },
@@ -291,10 +323,17 @@ export default function PartnerProfilePage() {
         </div>
       </div>
 
+      {/* Loans */}
+      <LoanSection
+        contactId={id}
+        loans={partner.Loan ?? []}
+        onChange={handleLoansChange}
+      />
+
       {/* Notes */}
       <div className="border border-gray-200 rounded-lg p-6">
         <NoteSection
-          notes={partner.notes}
+          notes={partner.Note ?? []}
           onAdd={handleAddNote}
           onDelete={handleDeleteNote}
           onEdit={handleEditNote}
@@ -304,7 +343,7 @@ export default function PartnerProfilePage() {
       {/* Danger zone */}
       <div className="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-700">Delete partner</p>
+          <p className="text-sm font-medium text-gray-700">Delete person</p>
           <p className="text-xs text-gray-400 mt-0.5">
             This will permanently delete all their data and notes.
           </p>
