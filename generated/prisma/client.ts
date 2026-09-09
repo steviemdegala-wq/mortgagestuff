@@ -52,6 +52,11 @@ export type DailyLog = Prisma.DailyLogModel
  */
 export type Person = Prisma.PersonModel
 /**
+ * Model Loan
+ * 
+ */
+export type Loan = Prisma.LoanModel
+/**
  * Model Note
  * 
  */

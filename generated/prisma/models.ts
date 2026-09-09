@@ -10,6 +10,7 @@
  */
 export type * from './models/DailyLog'
 export type * from './models/Person'
+export type * from './models/Loan'
 export type * from './models/Note'
 export type * from './models/DailyActivity'
 export type * from './models/ConversationLog'

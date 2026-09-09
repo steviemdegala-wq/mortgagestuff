@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   DailyLog: 'DailyLog',
   Person: 'Person',
+  Loan: 'Loan',
   Note: 'Note',
   DailyActivity: 'DailyActivity',
   ConversationLog: 'ConversationLog',
@@ -107,6 +108,23 @@ export const PersonScalarFieldEnum = {
 } as const
 
 export type PersonScalarFieldEnum = (typeof PersonScalarFieldEnum)[keyof typeof PersonScalarFieldEnum]
+
+
+export const LoanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  loanAmount: 'loanAmount',
+  loanType: 'loanType',
+  targetRate: 'targetRate',
+  pricingRate: 'pricingRate',
+  notes: 'notes',
+  expectedCloseDate: 'expectedCloseDate',
+  personId: 'personId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LoanScalarFieldEnum = (typeof LoanScalarFieldEnum)[keyof typeof LoanScalarFieldEnum]
 
 
 export const NoteScalarFieldEnum = {

@@ -32,8 +32,24 @@ model Person {
   lastContactedAt DateTime?
   notes              Note[]
   faceToFaceMeetings FaceToFaceMeeting[]
+  Loan               Loan[]
   createdAt          DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  updatedAt          DateTime  @updatedAt
+}
+
+model Loan {
+  id                String    @id @default(cuid())
+  name              String
+  loanAmount        Float
+  loanType          String
+  targetRate        Float?
+  pricingRate       Float?
+  notes             String?
+  expectedCloseDate DateTime? @db.Date
+  personId          String
+  person            Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Note {
