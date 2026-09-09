@@ -310,6 +310,7 @@ export default function PersonProfilePage() {
         loans={person.Loan ?? []}
         onChange={handleLoansChange}
         stage={person.stage}
+        onStageChange={(s) => patch({ stage: s } as Partial<Person>)}
       />
 
       <div className="border border-gray-200 rounded-lg p-6">

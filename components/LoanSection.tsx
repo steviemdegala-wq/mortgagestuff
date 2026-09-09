@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 
+export const PIPELINE_STAGES = [
+  "New Lead",
+  "Pre-Qualified",
+  "Application",
+  "Processing",
+  "Underwriting",
+  "Closing",
+  "Funded",
+];
+
 export const LOAN_TYPES = [
   "DSCR",
   "Conventional",
@@ -186,9 +196,10 @@ interface Props {
   loans: Loan[];
   onChange: (loans: Loan[]) => void;
   stage?: string | null;
+  onStageChange?: (stage: string | null) => void;
 }
 
-export default function LoanSection({ contactId, loans, onChange, stage }: Props) {
+export default function LoanSection({ contactId, loans, onChange, stage, onStageChange }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -275,11 +286,23 @@ export default function LoanSection({ contactId, loans, onChange, stage }: Props
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-medium text-black">{loan.name}</p>
-                  {stage && (
+                  {onStageChange ? (
+                    <select
+                      value={stage ?? ""}
+                      onChange={(e) => onStageChange(e.target.value || null)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs border border-gray-200 rounded px-2 py-0.5 bg-white text-gray-600 focus:outline-none focus:border-gray-400"
+                    >
+                      <option value="">No stage</option>
+                      {PIPELINE_STAGES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  ) : stage ? (
                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                       {stage}
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <p className="text-xs text-gray-400">{loan.loanType}</p>
               </div>
