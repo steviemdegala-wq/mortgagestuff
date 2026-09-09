@@ -18,18 +18,18 @@ export async function POST(
   // Get or create today's DailyActivity
   let activity = await prisma.dailyActivity.findUnique({
     where: { date },
-    include: { ConversationLog: { select: { slot: true } } },
+    include: { conversationLogs: { select: { slot: true } } },
   });
 
   if (!activity) {
     activity = await prisma.dailyActivity.create({
       data: { id: randomUUID(), date, updatedAt: new Date() },
-      include: { ConversationLog: { select: { slot: true } } },
+      include: { conversationLogs: { select: { slot: true } } },
     });
   }
 
   // Find the next empty slot (0–9), skip if all 10 are filled
-  const usedSlots = new Set(activity.ConversationLog.map((l) => l.slot));
+  const usedSlots = new Set(activity.conversationLogs.map((l) => l.slot));
   const nextSlot = Array.from({ length: 10 }, (_, i) => i).find((i) => !usedSlots.has(i));
 
   const personName = (await prisma.person.findUnique({ where: { id }, select: { name: true } }))?.name ?? "";

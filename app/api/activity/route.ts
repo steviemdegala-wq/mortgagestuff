@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   let activity = await prisma.dailyActivity.findUnique({
     where: { date },
     include: {
-      ConversationLog: { orderBy: { slot: "asc" } },
+      conversationLogs: { orderBy: { slot: "asc" } },
     },
   });
 
@@ -44,13 +44,13 @@ export async function GET(request: NextRequest) {
         updatedAt: new Date(),
       },
       include: {
-        ConversationLog: { orderBy: { slot: "asc" } },
+        conversationLogs: { orderBy: { slot: "asc" } },
       },
     });
   }
 
-  const logsWithPerson = await attachPersons(activity.ConversationLog);
-  return NextResponse.json({ ...activity, ConversationLog: logsWithPerson });
+  const logsWithPerson = await attachPersons(activity.conversationLogs);
+  return NextResponse.json({ ...activity, conversationLogs: logsWithPerson });
 }
 
 export async function PUT(request: NextRequest) {
@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date(),
     },
     include: {
-      ConversationLog: { orderBy: { slot: "asc" } },
+      conversationLogs: { orderBy: { slot: "asc" } },
     },
   });
 

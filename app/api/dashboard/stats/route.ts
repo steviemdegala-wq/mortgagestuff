@@ -48,14 +48,14 @@ export async function GET(request: NextRequest) {
       date: { gte: start, lte: today },
     },
     include: {
-      ConversationLog: { select: { slot: true } },
+      conversationLogs: { select: { slot: true } },
     },
   });
 
   const logMap = new Map<string, number>();
   for (const activity of activities) {
     const key = activity.date.toISOString().split("T")[0];
-    const distinctSlots = new Set(activity.ConversationLog.map((l) => l.slot));
+    const distinctSlots = new Set(activity.conversationLogs.map((l) => l.slot));
     logMap.set(key, distinctSlots.size);
   }
 
