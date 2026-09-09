@@ -43,7 +43,7 @@ export default function PartnersPage() {
     if (marketFilter) params.set("market", marketFilter);
     if (specFilter) params.set("spec", specFilter);
 
-    const res = await fetch(`/api/partners?${params}`);
+    const res = await fetch(`/api/people?${params}`);
     const data = await res.json();
     setPartners(data);
     setLoading(false);
@@ -65,7 +65,7 @@ export default function PartnersPage() {
 
   function handleCreated(partner: { id: string }) {
     setShowModal(false);
-    router.push(`/partners/${partner.id}`);
+    router.push(`/people/${partner.id}`);
   }
 
   return (
@@ -164,12 +164,12 @@ export default function PartnersPage() {
                   className={`hover:bg-gray-50 cursor-pointer transition-colors ${
                     i < partners.length - 1 ? "border-b border-gray-100" : ""
                   }`}
-                  onClick={() => router.push(`/partners/${partner.id}`)}
+                  onClick={() => router.push(`/people/${partner.id}`)}
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Link
-                        href={`/partners/${partner.id}`}
+                        href={`/people/${partner.id}`}
                         className="text-sm font-medium text-black hover:underline underline-offset-2"
                         onClick={(e) => e.stopPropagation()}
                       >

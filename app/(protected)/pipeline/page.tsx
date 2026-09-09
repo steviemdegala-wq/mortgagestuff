@@ -125,7 +125,7 @@ export default function PipelinePage() {
               <div
                 key={contact.id}
                 className="border border-gray-200 rounded-lg p-5 hover:border-gray-300 transition-colors cursor-pointer"
-                onClick={() => router.push(`/partners/${contact.id}`)}
+                onClick={() => router.push(`/people/${contact.id}`)}
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
