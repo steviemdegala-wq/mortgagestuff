@@ -39,7 +39,7 @@ export async function POST(
       where: { id },
       data: { lastContactedAt: new Date(), updatedAt: new Date() },
       include: {
-        Note: { orderBy: { createdAt: "desc" } },
+        notes: { orderBy: { createdAt: "desc" } },
         Loan: { orderBy: { createdAt: "asc" } },
       },
     }),
