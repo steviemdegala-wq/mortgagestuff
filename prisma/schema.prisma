@@ -38,6 +38,13 @@ model Person {
 }
 
 model Loan {
+  calculatorKey String? @unique
+  calculatorStage String?
+  calculatorContactKey String?
+  calculatorPropertyKey String?
+  estimateBorrowerSent Boolean @default(false)
+  estimateInternalSent Boolean @default(false)
+  projectLetterSent Boolean @default(false)
   id                String    @id @default(cuid())
   name              String
   loanAmount        Float
