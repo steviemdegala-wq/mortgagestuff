@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { personProfileInclude } from "@/lib/person-profile";
 
 export async function GET(
   _req: NextRequest,
@@ -8,11 +9,7 @@ export async function GET(
   const { id } = await params;
   const person = await prisma.person.findUnique({
     where: { id },
-    include: {
-      notes: { orderBy: { createdAt: "desc" } },
-      faceToFaceMeetings: { orderBy: { date: "desc" } },
-      Loan: { orderBy: { createdAt: "asc" } },
-    },
+    include: personProfileInclude,
   });
   if (!person) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(person);
@@ -42,11 +39,7 @@ export async function PATCH(
       ...(data.followUpDate !== undefined && { followUpDate: data.followUpDate ? new Date(data.followUpDate) : null }),
       ...(data.lastContactedAt !== undefined && { lastContactedAt: data.lastContactedAt ? new Date(data.lastContactedAt) : null }),
     },
-    include: {
-      notes: { orderBy: { createdAt: "desc" } },
-      faceToFaceMeetings: { orderBy: { date: "desc" } },
-      Loan: { orderBy: { createdAt: "asc" } },
-    },
+    include: personProfileInclude,
   });
 
   return NextResponse.json(updated);

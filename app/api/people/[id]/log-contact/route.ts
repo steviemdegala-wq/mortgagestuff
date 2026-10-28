@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { randomUUID } from "crypto";
+import { personProfileInclude } from "@/lib/person-profile";
 
 function todayDate() {
   const s = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
@@ -15,47 +15,48 @@ export async function POST(
   const { id } = await params;
   const date = todayDate();
 
-  // Get or create today's DailyActivity
-  let activity = await prisma.dailyActivity.findUnique({
-    where: { date },
-    include: { conversationLogs: { select: { slot: true } } },
-  });
+  const result = await prisma.$transaction(async (tx) => {
+    const contact = await tx.person.findUnique({ where: { id }, select: { name: true } });
+    if (!contact) return { error: "Person not found.", status: 404 } as const;
 
-  if (!activity) {
-    activity = await prisma.dailyActivity.create({
-      data: { id: randomUUID(), date, updatedAt: new Date() },
+    // Updating this shared row serializes profile logs for the same day.
+    const activity = await tx.dailyActivity.upsert({
+      where: { date },
+      update: { updatedAt: new Date() },
+      create: { date },
       include: { conversationLogs: { select: { slot: true } } },
     });
-  }
+    // The dashboard uses slots 1–10, not 0–9.
+    const usedSlots = new Set(activity.conversationLogs.map((log) => log.slot));
+    const nextSlot = Array.from({ length: 10 }, (_, i) => i + 1).find((slot) => !usedSlots.has(slot));
+    if (nextSlot === undefined) {
+      return { error: "Today's 10 conversation slots are full. Review today's conversations on the dashboard.", status: 409 } as const;
+    }
 
-  // Find the next empty slot (0–9), skip if all 10 are filled
-  const usedSlots = new Set(activity.conversationLogs.map((l) => l.slot));
-  const nextSlot = Array.from({ length: 10 }, (_, i) => i).find((i) => !usedSlots.has(i));
-
-  const personName = (await prisma.person.findUnique({ where: { id }, select: { name: true } }))?.name ?? "";
-
-  const [person] = await Promise.all([
-    prisma.person.update({
-      where: { id },
-      data: { lastContactedAt: new Date(), updatedAt: new Date() },
-      include: {
-        notes: { orderBy: { createdAt: "desc" } },
-        Loan: { orderBy: { createdAt: "asc" } },
+    await tx.conversationLog.create({
+      data: {
+        dailyActivityId: activity.id,
+        contactName: contact.name,
+        personId: id,
+        slot: nextSlot,
+        tags: [],
       },
-    }),
-    nextSlot !== undefined
-      ? prisma.conversationLog.create({
-          data: {
-            id: randomUUID(),
-            dailyActivityId: activity.id,
-            contactName: personName,
-            personId: id,
-            slot: nextSlot,
-            tags: [],
-          },
-        })
-      : Promise.resolve(null),
-  ]);
+    });
+    const dailyLog = await tx.dailyLog.findUnique({ where: { date } });
+    const dailyCount = Math.max(dailyLog?.count ?? 0, nextSlot, ...activity.conversationLogs.map((log) => log.slot));
+    await tx.dailyLog.upsert({
+      where: { date },
+      update: { count: dailyCount },
+      create: { date, count: dailyCount },
+    });
+    const person = await tx.person.update({
+      where: { id },
+      data: { lastContactedAt: new Date() },
+      include: personProfileInclude,
+    });
+    return { person, dailyCount };
+  }, { timeout: 15000 });
 
-  return NextResponse.json({ person, dailyCount: usedSlots.size + (nextSlot !== undefined ? 1 : 0) });
+  if ("error" in result) return NextResponse.json({ error: result.error }, { status: result.status });
+  return NextResponse.json(result);
 }

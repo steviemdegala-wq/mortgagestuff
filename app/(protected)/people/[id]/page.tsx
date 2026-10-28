@@ -37,7 +37,7 @@ interface Person {
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return "";
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  return new Date(dateStr.split("T")[0] + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
 function toDateInput(dateStr: string | null): string {
@@ -53,6 +53,7 @@ export default function PersonProfilePage() {
   const [deleting, setDeleting] = useState(false);
   const [logging, setLogging] = useState(false);
   const [loggedFlash, setLoggedFlash] = useState(false);
+  const [logError, setLogError] = useState("");
 
   const fetchPerson = useCallback(async () => {
     const res = await fetch(`/api/people/${id}`);
@@ -74,12 +75,18 @@ export default function PersonProfilePage() {
 
   async function handleLogConversation() {
     setLogging(true);
+    setLogError("");
     try {
       const res = await fetch(`/api/people/${id}/log-contact`, { method: "POST" });
-      const data = await res.json();
-      setPerson(data.person);
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.person?.id) {
+        throw new Error(data?.error ?? "Could not log this conversation. Please try again.");
+      }
+      setPerson((previous) => previous ? { ...previous, ...data.person } : data.person);
       setLoggedFlash(true);
       setTimeout(() => setLoggedFlash(false), 2500);
+    } catch (err) {
+      setLogError(err instanceof Error ? err.message : "Could not log this conversation. Please try again.");
     } finally {
       setLogging(false);
     }
@@ -166,6 +173,8 @@ export default function PersonProfilePage() {
           </button>
         </div>
       </div>
+
+      {logError && <p role="alert" className="text-sm text-red-600">{logError}</p>}
 
       {/* Contact info */}
       <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
