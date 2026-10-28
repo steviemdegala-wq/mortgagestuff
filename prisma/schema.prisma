@@ -38,6 +38,7 @@ model Person {
 }
 
 model Loan {
+  stage             String?   @default("New Lead")
   id                String    @id @default(cuid())
   name              String
   loanAmount        Float

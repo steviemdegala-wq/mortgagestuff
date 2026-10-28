@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { validLoanStage } from "@/lib/loan-stages";
 
 export async function POST(request: NextRequest) {
   const data = await request.json();
+  if (data.stage !== undefined && !validLoanStage(data.stage)) {
+    return NextResponse.json({ error: "Invalid loan stage" }, { status: 400 });
+  }
 
   const loan = await prisma.loan.create({
     data: {
+      stage: data.stage === undefined ? "New Lead" : data.stage,
       name: data.name,
       loanAmount: parseFloat(data.loanAmount),
       loanType: data.loanType,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { validLoanStage } from "@/lib/loan-stages";
 
 export async function PATCH(
   request: NextRequest,
@@ -7,10 +8,14 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const data = await request.json();
+  if (data.stage !== undefined && !validLoanStage(data.stage)) {
+    return NextResponse.json({ error: "Invalid loan stage" }, { status: 400 });
+  }
 
   const updated = await prisma.loan.update({
     where: { id },
     data: {
+      ...(data.stage !== undefined && { stage: data.stage }),
       ...(data.name !== undefined && { name: data.name }),
       ...(data.loanAmount !== undefined && { loanAmount: parseFloat(data.loanAmount) }),
       ...(data.loanType !== undefined && { loanType: data.loanType }),

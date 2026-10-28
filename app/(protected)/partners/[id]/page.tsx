@@ -328,8 +328,6 @@ export default function PartnerProfilePage() {
         contactId={id}
         loans={partner.Loan ?? []}
         onChange={handleLoansChange}
-        stage={partner.stage}
-        onStageChange={(s) => patch({ stage: s } as Partial<Partner>)}
       />
 
       {/* Notes */}

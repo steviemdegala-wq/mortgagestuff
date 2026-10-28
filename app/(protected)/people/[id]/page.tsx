@@ -145,7 +145,7 @@ export default function PersonProfilePage() {
           </div>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          {isPipeline && (
+          {isPipeline && !(person.Loan?.length) && (
             <select
               value={person.stage ?? ""}
               onChange={(e) => patch({ stage: e.target.value || null })}
@@ -309,8 +309,6 @@ export default function PersonProfilePage() {
         contactId={id}
         loans={person.Loan ?? []}
         onChange={handleLoansChange}
-        stage={person.stage}
-        onStageChange={(s) => patch({ stage: s } as Partial<Person>)}
       />
 
       <div className="border border-gray-200 rounded-lg p-6">

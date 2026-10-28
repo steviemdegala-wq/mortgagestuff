@@ -6,7 +6,7 @@ const PRESET_TAGS = ["Referral Partner", "Pipeline", "Past Client", "COI", "Real
 
 interface Props {
   onClose: () => void;
-  onCreated: (person: { id: string; name: string }) => void;
+  onCreated: (person: { id: string; name: string; phone: string | null; email: string | null; role: string | null; markets: string[]; specializations: string[] }) => void;
   initialName?: string;
 }
 
@@ -41,7 +41,7 @@ export default function AddPersonModal({ onClose, onCreated, initialName = "" }:
         throw new Error(body.error ?? `Server error ${res.status}`);
       }
       const created = await res.json();
-      onCreated({ id: created.id, name: created.name });
+      onCreated(created);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {

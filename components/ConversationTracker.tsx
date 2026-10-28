@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
+import AddPersonModal from "@/components/AddPersonModal";
+
 const PRESET_TAGS = ["Potential Lead", "Referral Partner"];
 
 interface PartnerResult {
@@ -76,6 +78,12 @@ export default function ConversationTracker() {
   const [slots, setSlots] = useState<SlotState[]>([]);
   const searchTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
+  const [addPersonSlot, setAddPersonSlot] = useState<number | null>(null);
+  const [error, setError] = useState("");
+  const saveQueues = useRef<Record<string, Promise<void>>>({});
+  const logIds = useRef<Record<string, string>>({});
+  const searchVersions = useRef<Record<number, number>>({});
+
   const dateStr = selectedDate;
   const isToday = selectedDate === todayDateStr();
 
@@ -92,6 +100,7 @@ export default function ConversationTracker() {
     const logsBySlot = new Map<number, ConversationLog>();
     for (const log of logs) {
       logsBySlot.set(log.slot, log);
+      logIds.current[`${dateStr}:${log.slot - 1}`] = log.id;
     }
 
     setSlots(
@@ -158,15 +167,18 @@ export default function ConversationTracker() {
   }
 
   async function searchPartners(index: number, query: string) {
+    clearTimeout(searchTimers.current[index]);
+    const version = (searchVersions.current[index] ?? 0) + 1;
+    searchVersions.current[index] = version;
     if (!query.trim()) {
       updateSlot(index, { suggestions: [], showSuggestions: false });
       return;
     }
-    clearTimeout(searchTimers.current[index]);
     searchTimers.current[index] = setTimeout(async () => {
       const res = await fetch(`/api/people/search?q=${encodeURIComponent(query)}`);
       const data: PartnerResult[] = await res.json();
-      updateSlot(index, { suggestions: data, showSuggestions: data.length > 0 });
+      if (searchVersions.current[index] !== version) return;
+      updateSlot(index, { suggestions: data, showSuggestions: true });
     }, 200);
   }
 
@@ -181,6 +193,8 @@ export default function ConversationTracker() {
   }
 
   function handleSelectPartner(index: number, partner: PartnerResult) {
+    clearTimeout(searchTimers.current[index]);
+    searchVersions.current[index] = (searchVersions.current[index] ?? 0) + 1;
     updateSlot(index, {
       contactName: partner.name,
       personId: partner.id,
@@ -207,37 +221,30 @@ export default function ConversationTracker() {
       logId: slots[index].logId,
     };
     if (!s.contactName.trim()) return;
-    updateSlot(index, { saving: true });
-    try {
-      if (s.logId) {
-        await fetch("/api/daily-activity/conversations", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: s.logId,
-            contactName: s.contactName,
-            personId: s.personId,
-            tags: s.tags,
-          }),
-        });
-      } else {
+    const key = `${dateStr}:${index}`;
+    const previous = saveQueues.current[key] ?? Promise.resolve();
+    const task = previous.catch(() => {}).then(async () => {
+      updateSlot(index, { saving: true });
+      try {
+        const id = logIds.current[key] ?? s.logId;
         const res = await fetch("/api/daily-activity/conversations", {
-          method: "POST",
+          method: id ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contactName: s.contactName,
-            personId: s.personId,
-            tags: s.tags,
-            slot: index + 1,
-            date: dateStr,
+            ...(id ? { id } : { slot: index + 1, date: dateStr }),
+            contactName: s.contactName, personId: s.personId, tags: s.tags,
           }),
         });
-        const newLog = await res.json();
-        updateSlot(index, { logId: newLog.id });
-      }
-    } finally {
-      updateSlot(index, { saving: false });
-    }
+        if (!res.ok) throw new Error("Could not save this conversation. Please try again.");
+        const log = await res.json();
+        logIds.current[key] = log.id;
+        updateSlot(index, { logId: log.id });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not save conversation.");
+      } finally { updateSlot(index, { saving: false }); }
+    });
+    saveQueues.current[key] = task;
+    await task;
   }
 
   function toggleTag(index: number, tag: string) {
@@ -269,10 +276,14 @@ export default function ConversationTracker() {
   }
 
   async function clearSlot(index: number) {
-    const s = slots[index];
-    if (s.logId) {
-      await fetch(`/api/daily-activity/conversations?id=${s.logId}`, { method: "DELETE" });
+    const key = `${dateStr}:${index}`;
+    await saveQueues.current[key];
+    const id = logIds.current[key] ?? slots[index].logId;
+    if (id) {
+      const res = await fetch(`/api/daily-activity/conversations?id=${id}`, { method: "DELETE" });
+      if (!res.ok) { setError("Could not clear conversation. Please try again."); return; }
     }
+    delete logIds.current[key];
     updateSlot(index, emptySlot());
   }
 
@@ -307,6 +318,14 @@ export default function ConversationTracker() {
         )}
       </div>
 
+      {error && <p role="alert" className="text-sm text-red-600 mb-3">{error}</p>}
+      {addPersonSlot !== null && slots[addPersonSlot] && (
+        <AddPersonModal
+          initialName={slots[addPersonSlot].contactName.trim()}
+          onClose={() => setAddPersonSlot(null)}
+          onCreated={(person) => { handleSelectPartner(addPersonSlot, person); setAddPersonSlot(null); }}
+        />
+      )}
       {loading ? (
         <div className="flex gap-2">
           {Array.from({ length: 10 }).map((_, i) => (
@@ -371,6 +390,7 @@ export default function ConversationTracker() {
                     onCustomTagChange={(v) => updateSlot(i, { customTagInput: v })}
                     onAddCustomTag={() => handleAddCustomTag(i)}
                     onClear={() => clearSlot(i)}
+                    onAddPerson={() => setAddPersonSlot(i)}
                   />
                 );
               })}
@@ -392,6 +412,7 @@ function ConversationSlot({
   onCustomTagChange,
   onAddCustomTag,
   onClear,
+  onAddPerson,
 }: {
   index: number;
   slot: SlotState;
@@ -402,6 +423,7 @@ function ConversationSlot({
   onCustomTagChange: (v: string) => void;
   onAddCustomTag: () => void;
   onClear: () => void;
+  onAddPerson: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -425,9 +447,7 @@ function ConversationSlot({
             placeholder="Contact name"
             value={slot.contactName}
             onChange={(e) => onNameChange(e.target.value)}
-            onBlur={() => {
-              setTimeout(() => onBlur(), 150);
-            }}
+            onBlur={onBlur}
             className="w-full text-sm bg-white border border-gray-200 rounded px-3 py-1.5 focus:outline-none focus:border-gray-400 placeholder:text-gray-300"
           />
           {slot.showSuggestions && slot.suggestions.length > 0 && (
@@ -435,7 +455,8 @@ function ConversationSlot({
               {slot.suggestions.map((p) => (
                 <button
                   key={p.id}
-                  onMouseDown={() => onSelectPartner(p)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => onSelectPartner(p)}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-baseline gap-2"
                 >
                   <span className="font-medium text-black">{p.name}</span>
@@ -445,6 +466,12 @@ function ConversationSlot({
             </div>
           )}
         </div>
+        {slot.contactName.trim() && !slot.personId && (
+          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={onAddPerson}
+            className="text-xs border border-gray-200 rounded px-2 py-1.5 text-gray-600 hover:bg-white flex-shrink-0">
+            + Add person
+          </button>
+        )}
         {slot.contactName && (
           <button
             onClick={onClear}

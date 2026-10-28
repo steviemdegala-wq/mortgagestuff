@@ -15,6 +15,7 @@ const STAGES = [
 ];
 
 interface Loan {
+  stage: string | null;
   id: string;
   name: string;
   loanAmount: number;
@@ -45,7 +46,7 @@ function fmtRate(n: number | null) {
 
 function fmtDate(s: string | null) {
   if (!s) return null;
-  return new Date(s + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return new Date(s.split("T")[0] + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export default function PipelinePage() {
@@ -54,15 +55,51 @@ export default function PipelinePage() {
   const [search, setSearch] = useState("");
   const [stageFilter, setStageFilter] = useState("");
   const router = useRouter();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  function toggleLoans(ids: string[]) {
+    setSelected((previous) => {
+      const next = new Set(previous);
+      const remove = ids.every((id) => next.has(id));
+      ids.forEach((id) => remove ? next.delete(id) : next.add(id));
+      return next;
+    });
+  }
+
+  async function deleteSelected() {
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/pipeline", {
+        method: "DELETE", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loanIds: [...selected] }),
+      });
+      if (!res.ok) throw new Error("Could not delete the selected loans. Please try again.");
+      setSelected(new Set());
+      setConfirmDelete(false);
+      await fetchContacts();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete loans.");
+    } finally { setDeleting(false); }
+  }
 
   const fetchContacts = useCallback(async () => {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (stageFilter) params.set("stage", stageFilter);
-    const res = await fetch(`/api/pipeline?${params}`);
-    const data = await res.json();
-    setContacts(data);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/pipeline?${params}`);
+      if (!res.ok) throw new Error("Could not load pipeline. Please refresh and try again.");
+      const data: Person[] = await res.json();
+      setContacts(data);
+      const visible = new Set(data.flatMap((person) => person.Loan.map((loan) => loan.id)));
+      setSelected((previous) => new Set([...previous].filter((id) => visible.has(id))));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load pipeline.");
+    } finally { setLoading(false); }
   }, [search, stageFilter]);
 
   useEffect(() => { fetchContacts(); }, [fetchContacts]);
@@ -110,6 +147,35 @@ export default function PipelinePage() {
         </select>
       </div>
 
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {!loading && contacts.length > 0 && (
+        <div className="flex flex-wrap items-center gap-4 border border-gray-200 rounded-lg p-3">
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" disabled={deleting}
+              checked={contacts.every((person) => person.Loan.every((loan) => selected.has(loan.id)))}
+              onChange={() => toggleLoans(contacts.flatMap((person) => person.Loan.map((loan) => loan.id)))} />
+            Select all visible loans
+          </label>
+          <span className="text-sm text-gray-400">{selected.size} selected</span>
+          {selected.size > 0 && <>
+            <button disabled={deleting} onClick={() => setSelected(new Set())} className="text-sm text-gray-500">Clear selection</button>
+            <button disabled={deleting} onClick={() => setConfirmDelete(true)} className="ml-auto text-sm text-red-600 border border-red-200 rounded px-3 py-1.5">Delete selected</button>
+          </>}
+        </div>
+      )}
+      {confirmDelete && (
+        <div role="dialog" aria-modal="true" aria-labelledby="delete-title" className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full space-y-4">
+            <h2 id="delete-title" className="font-semibold">Delete {selected.size} selected {selected.size === 1 ? "loan" : "loans"}?</h2>
+            <p className="text-sm text-gray-500">The selected loans will be permanently deleted. People profiles, notes, and unselected loans will be kept.</p>
+            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+            <div className="flex justify-end gap-3">
+              <button disabled={deleting} onClick={() => setConfirmDelete(false)} className="text-sm px-3 py-2">Cancel</button>
+              <button disabled={deleting} onClick={deleteSelected} className="text-sm px-3 py-2 rounded bg-red-600 text-white disabled:opacity-50">{deleting ? "Deleting..." : "Delete loans"}</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Cards */}
       {loading ? (
         <div className="p-8 text-center text-sm text-gray-400">Loading...</div>
@@ -128,15 +194,17 @@ export default function PipelinePage() {
                 onClick={() => router.push(`/people/${contact.id}`)}
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <p className="text-sm font-semibold text-black">{contact.name}</p>
+                  <div className="flex items-start gap-3">
+                    <input type="checkbox" aria-label={`Select all loans for ${contact.name}`} disabled={deleting}
+                      checked={contact.Loan.every((loan) => selected.has(loan.id))}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => toggleLoans(contact.Loan.map((loan) => loan.id))} />
+                    <div>
+                    <button onClick={(e) => { e.stopPropagation(); router.push(`/people/${contact.id}`); }} className="text-sm font-semibold text-black hover:underline">{contact.name}</button>
                     <div className="flex items-center gap-2 mt-0.5">
                       {contact.role && <p className="text-xs text-gray-400">{contact.role}</p>}
-                      {contact.stage && (
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                          {contact.stage}
-                        </span>
-                      )}
+
+                    </div>
                     </div>
                   </div>
                   <p className="text-sm font-semibold text-black flex-shrink-0">{fmt(contactTotal)}</p>
@@ -145,15 +213,18 @@ export default function PipelinePage() {
                 <div className="space-y-2">
                   {contact.Loan.map((loan) => (
                     <div key={loan.id} className="flex items-start gap-3 pl-3 border-l-2 border-gray-100">
+                      <input type="checkbox" aria-label={`Select ${loan.name}`} disabled={deleting}
+                        checked={selected.has(loan.id)} onClick={(e) => e.stopPropagation()}
+                        onChange={() => toggleLoans([loan.id])} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-sm text-gray-800">{loan.name}</p>
                           <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded">
                             {loan.loanType}
                           </span>
-                          {contact.stage && (
+                          {loan.stage && (
                             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                              {contact.stage}
+                              {loan.stage}
                             </span>
                           )}
                         </div>

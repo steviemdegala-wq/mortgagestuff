@@ -21,7 +21,7 @@ interface Person {
   loanAmount: number | null;
   lastContactedAt: string | null;
   _count: { notes: number };
-  Loan: { id: string; loanAmount: number; loanType: string }[];
+  Loan: { id: string; loanAmount: number; loanType: string; stage: string | null }[];
 }
 
 function daysSince(dateStr: string): string {
@@ -77,8 +77,8 @@ export default function PeoplePage() {
 
   const sortedPeople = useMemo(() => {
     if (sortBy === "pipeline") {
-      const pipeline = people.filter((p) => p.stage).sort((a, b) => a.name.localeCompare(b.name));
-      const rest = people.filter((p) => !p.stage).sort((a, b) => a.name.localeCompare(b.name));
+      const pipeline = people.filter((p) => p.Loan.length > 0 || p.stage).sort((a, b) => a.name.localeCompare(b.name));
+      const rest = people.filter((p) => p.Loan.length === 0 && !p.stage).sort((a, b) => a.name.localeCompare(b.name));
       return [...pipeline, ...rest];
     }
     if (sortBy === "tag") {
@@ -95,7 +95,7 @@ export default function PeoplePage() {
 
   // divider index for pipeline sort: where pipeline ends
   const pipelineDividerIndex = sortBy === "pipeline"
-    ? sortedPeople.findIndex((p) => !p.stage)
+    ? sortedPeople.findIndex((p) => p.Loan.length === 0 && !p.stage)
     : -1;
 
   return (
@@ -220,8 +220,10 @@ export default function PeoplePage() {
                         >
                           {person.name}
                         </Link>
-                        {person.stage && (
-                          <p className="text-xs text-gray-400 mt-0.5">{person.stage}</p>
+                        {(person.Loan.length > 0 || person.stage) && (
+                          <p className="text-xs text-gray-400 mt-0.5">{person.Loan.length > 0
+                            ? [...new Set(person.Loan.map((loan) => loan.stage ?? "No stage"))].join(" · ")
+                            : person.stage}</p>
                         )}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">

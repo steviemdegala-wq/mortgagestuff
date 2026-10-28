@@ -24,6 +24,7 @@ const STAGE_COLORS: Record<string, string> = {
 };
 
 interface Loan {
+  stage: string | null;
   loanAmount: number;
 }
 
@@ -48,9 +49,10 @@ export default function PipelineValueChart({ contacts }: Props) {
 
   const totals: Record<string, number> = {};
   for (const c of withLoans) {
-    const key = c.stage ?? "No stage";
-    const contactTotal = c.Loan.reduce((sum, l) => sum + l.loanAmount, 0);
-    totals[key] = (totals[key] ?? 0) + contactTotal;
+    for (const loan of c.Loan) {
+      const key = loan.stage ?? "No stage";
+      totals[key] = (totals[key] ?? 0) + loan.loanAmount;
+    }
   }
 
   const data = [

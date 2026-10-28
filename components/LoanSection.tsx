@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 
-export const PIPELINE_STAGES = [
-  "New Lead",
-  "Pre-Qualified",
-  "Application",
-  "Processing",
-  "Underwriting",
-  "Closing",
-  "Funded",
-];
+import { PIPELINE_STAGES } from "@/lib/loan-stages";
+export { PIPELINE_STAGES } from "@/lib/loan-stages";
 
 export const LOAN_TYPES = [
   "DSCR",
@@ -30,6 +23,7 @@ export const LOAN_TYPES = [
 ] as const;
 
 export interface Loan {
+  stage: string | null;
   id: string;
   name: string;
   loanAmount: number;
@@ -195,14 +189,32 @@ interface Props {
   contactId: string;
   loans: Loan[];
   onChange: (loans: Loan[]) => void;
-  stage?: string | null;
-  onStageChange?: (stage: string | null) => void;
 }
 
-export default function LoanSection({ contactId, loans, onChange, stage, onStageChange }: Props) {
+export default function LoanSection({ contactId, loans, onChange }: Props) {
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const [stageSaving, setStageSaving] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
+  async function updateStage(id: string, stage: string | null) {
+    setStageSaving(id);
+    setError("");
+    try {
+      const res = await fetch(`/api/loans/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stage }),
+      });
+      if (!res.ok) throw new Error("Could not save loan status. Please try again.");
+      const updated = await res.json();
+      onChange(loans.map((loan) => loan.id === id ? updated : loan));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save loan status.");
+    } finally { setStageSaving(null); }
+  }
 
   const total = loans.reduce((sum, l) => sum + l.loanAmount, 0);
 
@@ -259,6 +271,7 @@ export default function LoanSection({ contactId, loans, onChange, stage, onStage
         )}
       </div>
 
+      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
       {loans.length === 0 && !showAdd && (
         <p className="text-sm text-gray-400">No loans yet.</p>
       )}
@@ -286,23 +299,16 @@ export default function LoanSection({ contactId, loans, onChange, stage, onStage
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-medium text-black">{loan.name}</p>
-                  {onStageChange ? (
-                    <select
-                      value={stage ?? ""}
-                      onChange={(e) => onStageChange(e.target.value || null)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-xs border border-gray-200 rounded px-2 py-0.5 bg-white text-gray-600 focus:outline-none focus:border-gray-400"
-                    >
-                      <option value="">No stage</option>
-                      {PIPELINE_STAGES.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
-                  ) : stage ? (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                      {stage}
-                    </span>
-                  ) : null}
+                  <select
+                    aria-label={`Stage for ${loan.name}`}
+                    value={loan.stage ?? ""}
+                    disabled={stageSaving !== null}
+                    onChange={(e) => updateStage(loan.id, e.target.value || null)}
+                    className="text-xs border border-gray-200 rounded px-2 py-0.5 bg-white text-gray-600 disabled:opacity-50"
+                  >
+                    <option value="">No stage</option>
+                    {PIPELINE_STAGES.map((stage) => <option key={stage} value={stage}>{stage}</option>)}
+                  </select>
                 </div>
                 <p className="text-xs text-gray-400">{loan.loanType}</p>
               </div>
@@ -324,7 +330,7 @@ export default function LoanSection({ contactId, loans, onChange, stage, onStage
 
             {loan.expectedCloseDate && (
               <p className="text-xs text-gray-400">
-                Close: <span className="text-gray-600">{new Date(loan.expectedCloseDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                Close: <span className="text-gray-600">{new Date(loan.expectedCloseDate.split("T")[0] + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               </p>
             )}
             {loan.notes && (

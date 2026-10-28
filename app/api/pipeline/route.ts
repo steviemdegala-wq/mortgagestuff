@@ -24,12 +24,12 @@ export async function GET(request: NextRequest) {
       AND: [
         { Loan: { some: {} } },
         search ? { name: { contains: search, mode: "insensitive" } } : {},
-        stage ? { stage } : {},
+        stage ? { Loan: { some: { stage } } } : {},
       ],
     },
     orderBy: { createdAt: "desc" },
     include: {
-      Loan: { orderBy: { createdAt: "asc" } },
+      Loan: { where: stage ? { stage } : {}, orderBy: { createdAt: "asc" } },
     },
   });
 
@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       loanAmount: loanAmount(data.loanAmount),
       Loan: {
         create: {
+          stage: optionalText(data.stage) ?? "New Lead",
           name: `${name} - ${type}`,
           loanAmount: loanAmount(data.loanAmount),
           loanType: type,
@@ -83,4 +84,16 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json(person, { status: 201 });
+}
+
+// Only remove selected loans; their people, notes, and other loans remain.
+export async function DELETE(request: NextRequest) {
+  const body = await request.json().catch(() => null);
+  const ids = body?.loanIds;
+  if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500 ||
+      ids.some((id: unknown) => typeof id !== "string" || !id.trim())) {
+    return NextResponse.json({ error: "Select between 1 and 500 loans" }, { status: 400 });
+  }
+  const result = await prisma.loan.deleteMany({ where: { id: { in: [...new Set<string>(ids)] } } });
+  return NextResponse.json({ deleted: result.count });
 }
