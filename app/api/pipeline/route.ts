@@ -18,18 +18,19 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") ?? "";
   const stage = searchParams.get("stage") ?? "";
+  const archived = searchParams.get("view") === "archived";
+  const loanWhere = { archivedAt: archived ? { not: null } : null, ...(stage ? { stage } : {}) };
 
   const contacts = await prisma.person.findMany({
     where: {
       AND: [
-        { Loan: { some: {} } },
+        { Loan: { some: loanWhere } },
         search ? { name: { contains: search, mode: "insensitive" } } : {},
-        stage ? { Loan: { some: { stage } } } : {},
       ],
     },
     orderBy: { createdAt: "desc" },
     include: {
-      Loan: { where: stage ? { stage } : {}, orderBy: { createdAt: "asc" } },
+      Loan: { where: loanWhere, orderBy: { createdAt: "asc" } },
     },
   });
 
@@ -86,14 +87,34 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(person, { status: 201 });
 }
 
-// Only remove selected loans; their people, notes, and other loans remain.
-export async function DELETE(request: NextRequest) {
-  const body = await request.json().catch(() => null);
+function selectedLoanIds(body: { loanIds?: unknown } | null): string[] | null {
   const ids = body?.loanIds;
   if (!Array.isArray(ids) || ids.length === 0 || ids.length > 500 ||
-      ids.some((id: unknown) => typeof id !== "string" || !id.trim())) {
-    return NextResponse.json({ error: "Select between 1 and 500 loans" }, { status: 400 });
+      ids.some((id: unknown) => typeof id !== "string" || !id.trim())) return null;
+  return [...new Set<string>(ids)];
+}
+
+export async function PATCH(request: NextRequest) {
+  const body = await request.json().catch(() => null);
+  const ids = selectedLoanIds(body);
+  if (!ids || !["archive", "restore"].includes(body?.action)) {
+    return NextResponse.json({ error: "Select between 1 and 500 loans and choose archive or restore" }, { status: 400 });
   }
-  const result = await prisma.loan.deleteMany({ where: { id: { in: [...new Set<string>(ids)] } } });
+  const archive = body.action === "archive";
+  const result = await prisma.loan.updateMany({
+    where: { id: { in: ids }, archivedAt: archive ? null : { not: null } },
+    data: { archivedAt: archive ? new Date() : null },
+  });
+  return NextResponse.json({ updated: result.count });
+}
+
+// Permanent deletion is available only for loans already in the archive.
+export async function DELETE(request: NextRequest) {
+  const body = await request.json().catch(() => null);
+  const ids = selectedLoanIds(body);
+  if (!ids) {
+    return NextResponse.json({ error: "Select between 1 and 500 archived loans" }, { status: 400 });
+  }
+  const result = await prisma.loan.deleteMany({ where: { id: { in: ids }, archivedAt: { not: null } } });
   return NextResponse.json({ deleted: result.count });
 }

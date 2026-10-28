@@ -38,6 +38,7 @@ model Person {
 }
 
 model Loan {
+  archivedAt        DateTime?
   stage             String?   @default("New Lead")
   id                String    @id @default(cuid())
   name              String

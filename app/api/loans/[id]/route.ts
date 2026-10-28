@@ -36,6 +36,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  await prisma.loan.delete({ where: { id } });
+  const result = await prisma.loan.deleteMany({ where: { id, archivedAt: { not: null } } });
+  if (!result.count) return NextResponse.json({ error: "Archive this loan before permanently deleting it" }, { status: 409 });
   return NextResponse.json({ ok: true });
 }

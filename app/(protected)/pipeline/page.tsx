@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PipelineValueChart from "@/components/PipelineValueChart";
 
@@ -16,6 +16,7 @@ const STAGES = [
 
 interface Loan {
   stage: string | null;
+  archivedAt: string | null;
   id: string;
   name: string;
   loanAmount: number;
@@ -55,6 +56,8 @@ export default function PipelinePage() {
   const [search, setSearch] = useState("");
   const [stageFilter, setStageFilter] = useState("");
   const router = useRouter();
+  const [view, setView] = useState<"active" | "archived">("active");
+  const requestVersion = useRef(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
@@ -69,38 +72,40 @@ export default function PipelinePage() {
     });
   }
 
-  async function deleteSelected() {
+  async function updateSelected(action: "archive" | "restore" | "delete") {
     setDeleting(true);
     setError("");
     try {
       const res = await fetch("/api/pipeline", {
-        method: "DELETE", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ loanIds: [...selected] }),
+        method: action === "delete" ? "DELETE" : "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loanIds: [...selected], action }),
       });
-      if (!res.ok) throw new Error("Could not delete the selected loans. Please try again.");
+      if (!res.ok) throw new Error(`Could not ${action} the selected loans. Please try again.`);
       setSelected(new Set());
       setConfirmDelete(false);
       await fetchContacts();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not delete loans.");
+      setError(err instanceof Error ? err.message : "Could not update loans.");
     } finally { setDeleting(false); }
   }
 
   const fetchContacts = useCallback(async () => {
-    const params = new URLSearchParams();
+    const version = ++requestVersion.current;
+    const params = new URLSearchParams({ view });
     if (search) params.set("search", search);
     if (stageFilter) params.set("stage", stageFilter);
     try {
       const res = await fetch(`/api/pipeline?${params}`);
       if (!res.ok) throw new Error("Could not load pipeline. Please refresh and try again.");
       const data: Person[] = await res.json();
+      if (version !== requestVersion.current) return;
       setContacts(data);
       const visible = new Set(data.flatMap((person) => person.Loan.map((loan) => loan.id)));
       setSelected((previous) => new Set([...previous].filter((id) => visible.has(id))));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load pipeline.");
-    } finally { setLoading(false); }
-  }, [search, stageFilter]);
+    } finally { if (version === requestVersion.current) setLoading(false); }
+  }, [search, stageFilter, view]);
 
   useEffect(() => { fetchContacts(); }, [fetchContacts]);
 
@@ -124,7 +129,17 @@ export default function PipelinePage() {
         </div>
       </div>
 
-      <PipelineValueChart contacts={contacts} />
+      <div className="flex gap-2" aria-label="Pipeline view">
+        {(["active", "archived"] as const).map((tab) => (
+          <button key={tab} disabled={deleting} aria-pressed={view === tab}
+            onClick={() => { setView(tab); setSelected(new Set()); setContacts([]); setLoading(true); setError(""); setConfirmDelete(false); }}
+            className={`text-sm px-4 py-2 rounded ${view === tab ? "bg-black text-white" : "border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+            {tab === "active" ? "Active pipeline" : "Archived"}
+          </button>
+        ))}
+      </div>
+      {view === "archived" && <p className="text-sm text-gray-500">Archived loans are kept for your records and excluded from the active pipeline. Restore them anytime, or permanently delete them here.</p>}
+      {view === "active" && <PipelineValueChart contacts={contacts} />}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
@@ -159,19 +174,24 @@ export default function PipelinePage() {
           <span className="text-sm text-gray-400">{selected.size} selected</span>
           {selected.size > 0 && <>
             <button disabled={deleting} onClick={() => setSelected(new Set())} className="text-sm text-gray-500">Clear selection</button>
-            <button disabled={deleting} onClick={() => setConfirmDelete(true)} className="ml-auto text-sm text-red-600 border border-red-200 rounded px-3 py-1.5">Delete selected</button>
+            {view === "active" ? (
+              <button disabled={deleting} onClick={() => updateSelected("archive")} className="ml-auto text-sm border border-gray-200 rounded px-3 py-1.5">{deleting ? "Archiving..." : "Archive selected"}</button>
+            ) : <>
+              <button disabled={deleting} onClick={() => updateSelected("restore")} className="ml-auto text-sm border border-gray-200 rounded px-3 py-1.5">{deleting ? "Updating..." : "Restore selected"}</button>
+              <button disabled={deleting} onClick={() => setConfirmDelete(true)} className="text-sm text-red-600 border border-red-200 rounded px-3 py-1.5">Permanently delete selected</button>
+            </>}
           </>}
         </div>
       )}
       {confirmDelete && (
         <div role="dialog" aria-modal="true" aria-labelledby="delete-title" className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full space-y-4">
-            <h2 id="delete-title" className="font-semibold">Delete {selected.size} selected {selected.size === 1 ? "loan" : "loans"}?</h2>
-            <p className="text-sm text-gray-500">The selected loans will be permanently deleted. People profiles, notes, and unselected loans will be kept.</p>
+            <h2 id="delete-title" className="font-semibold">Permanently delete {selected.size} selected {selected.size === 1 ? "loan" : "loans"}?</h2>
+            <p className="text-sm text-gray-500">The selected archived loans will be permanently deleted. This cannot be undone. People profiles, notes, and unselected loans will be kept.</p>
             {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
             <div className="flex justify-end gap-3">
               <button disabled={deleting} onClick={() => setConfirmDelete(false)} className="text-sm px-3 py-2">Cancel</button>
-              <button disabled={deleting} onClick={deleteSelected} className="text-sm px-3 py-2 rounded bg-red-600 text-white disabled:opacity-50">{deleting ? "Deleting..." : "Delete loans"}</button>
+              <button disabled={deleting} onClick={() => updateSelected("delete")} className="text-sm px-3 py-2 rounded bg-red-600 text-white disabled:opacity-50">{deleting ? "Deleting..." : "Permanently delete"}</button>
             </div>
           </div>
         </div>
@@ -181,7 +201,7 @@ export default function PipelinePage() {
         <div className="p-8 text-center text-sm text-gray-400">Loading...</div>
       ) : contacts.length === 0 ? (
         <div className="p-8 text-center border border-gray-200 rounded-lg">
-          <p className="text-sm text-gray-400">No pipeline entries yet. Add a loan to a person to see them here.</p>
+          <p className="text-sm text-gray-400">{view === "archived" ? "No archived loans." : "No active pipeline entries. Add a loan to a person to see them here."}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -222,6 +242,7 @@ export default function PipelinePage() {
                           <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded">
                             {loan.loanType}
                           </span>
+                          {loan.archivedAt && <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Archived {fmtDate(loan.archivedAt)}</span>}
                           {loan.stage && (
                             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                               {loan.stage}

@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
       AND: [
         search ? { name: { contains: search, mode: "insensitive" } } : {},
         tag ? { tags: { has: tag } } : {},
-        stage ? { OR: [{ Loan: { some: { stage } } }, { Loan: { none: {} }, stage }] } : {},
+        stage ? { OR: [{ Loan: { some: { stage, archivedAt: null } } }, { Loan: { none: {} }, stage }] } : {},
       ],
     },
     orderBy: { name: "asc" },
-    include: { _count: { select: { notes: true } }, Loan: { select: { id: true, loanAmount: true, loanType: true, stage: true } } },
+    include: { _count: { select: { notes: true } }, Loan: { where: { archivedAt: null }, select: { id: true, loanAmount: true, loanType: true, stage: true } } },
   });
 
   return NextResponse.json(people);

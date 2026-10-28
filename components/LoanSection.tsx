@@ -23,6 +23,7 @@ export const LOAN_TYPES = [
 ] as const;
 
 export interface Loan {
+  archivedAt: string | null;
   stage: string | null;
   id: string;
   name: string;
@@ -216,7 +217,7 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
     } finally { setStageSaving(null); }
   }
 
-  const total = loans.reduce((sum, l) => sum + l.loanAmount, 0);
+  const total = loans.filter((loan) => !loan.archivedAt).reduce((sum, l) => sum + l.loanAmount, 0);
 
   async function handleAdd(form: LoanFormState) {
     setSaving(true);
@@ -244,10 +245,18 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
     setSaving(false);
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Delete this loan?")) return;
-    await fetch(`/api/loans/${id}`, { method: "DELETE" });
-    onChange(loans.filter((l) => l.id !== id));
+  async function handleArchive(loan: Loan) {
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch("/api/pipeline", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loanIds: [loan.id], action: loan.archivedAt ? "restore" : "archive" }),
+      });
+      if (!res.ok) throw new Error("Could not update the archive. Please try again.");
+      onChange(loans.map((item) => item.id === loan.id ? { ...item, archivedAt: loan.archivedAt ? null : new Date().toISOString() } : item));
+    } catch (err) { setError(err instanceof Error ? err.message : "Could not update archive."); }
+    finally { setSaving(false); }
   }
 
   return (
@@ -257,7 +266,7 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
           <h2 className="text-sm font-medium text-gray-700">Loans</h2>
           {loans.length > 0 && (
             <p className="text-xs text-gray-400 mt-0.5">
-              {loans.length} {loans.length === 1 ? "loan" : "loans"} · {fmt(total)} total
+              {loans.length} {loans.length === 1 ? "loan" : "loans"} · {fmt(total)} active total
             </p>
           )}
         </div>
@@ -299,6 +308,7 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-medium text-black">{loan.name}</p>
+                  {loan.archivedAt && <span className="text-xs bg-gray-100 text-gray-500 rounded px-2 py-0.5">Archived</span>}
                   <select
                     aria-label={`Stage for ${loan.name}`}
                     value={loan.stage ?? ""}
@@ -345,10 +355,11 @@ export default function LoanSection({ contactId, loans, onChange }: Props) {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(loan.id)}
+                disabled={saving}
+                onClick={() => handleArchive(loan)}
                 className="text-xs text-gray-400 hover:text-red-500 transition-colors"
               >
-                Delete
+                {loan.archivedAt ? "Restore" : "Archive"}
               </button>
             </div>
           </div>

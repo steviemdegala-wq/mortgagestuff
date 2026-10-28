@@ -1076,6 +1076,7 @@ export type PersonScalarFieldEnum = (typeof PersonScalarFieldEnum)[keyof typeof 
 
 
 export const LoanScalarFieldEnum = {
+  archivedAt: 'archivedAt',
   stage: 'stage',
   id: 'id',
   name: 'name',

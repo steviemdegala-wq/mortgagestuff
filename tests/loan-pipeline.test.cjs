@@ -38,12 +38,12 @@ test('stage filter queries matching loans and includes only those loans',async()
   let query;
   const route=load('app/api/pipeline/route.ts',{person:{findMany:async q=>{query=q;return [];}}});
   await route.GET({url:'https://crm.example/api/pipeline?stage=Closing'});
-  assert.equal(query.where.AND[2].Loan.some.stage,'Closing');
+  assert.equal(query.where.AND[0].Loan.some.stage,'Closing');
   assert.equal(query.include.Loan.where.stage,'Closing');
 });
 test('bulk delete removes only selected loan ids and rejects empty or malformed lists',async()=>{
   let ids;
-  const route=load('app/api/pipeline/route.ts',{loan:{deleteMany:async q=>{ids=[...q.where.id.in];return {count:ids.length};}}});
+  const route=load('app/api/pipeline/route.ts',{loan:{deleteMany:async q=>{assert.equal(q.where.archivedAt.not,null);ids=[...q.where.id.in];return {count:ids.length};}}});
   for (const loanIds of [[],[''],[null],Array(501).fill('a')]) {
     assert.equal((await route.DELETE(request({loanIds}))).status,400);
   }
@@ -57,4 +57,47 @@ test('new website submissions assign the stage to the created loan',async()=>{
   const route=load('app/api/pipeline/route.ts',{person:{create:async q=>{query=q;return {id:'new'};}}});
   await route.POST(request({name:'Test',loanType:'DSCR'}));
   assert.equal(query.data.Loan.create.stage,'New Lead');
+});
+
+test('active and archived views filter both people and their loans',async()=>{
+  let query;
+  const route=load('app/api/pipeline/route.ts',{person:{findMany:async q=>{query=q;return [];}}});
+  await route.GET({url:'https://crm.example/api/pipeline'});
+  assert.equal(query.where.AND[0].Loan.some.archivedAt,null);
+  assert.equal(query.include.Loan.where.archivedAt,null);
+  await route.GET({url:'https://crm.example/api/pipeline?view=archived&stage=Funded'});
+  assert.equal(query.where.AND[0].Loan.some.archivedAt.not,null);
+  assert.equal(query.include.Loan.where.archivedAt.not,null);
+  assert.equal(query.include.Loan.where.stage,'Funded');
+});
+test('archive and restore preserve details and leave unselected loans untouched',async()=>{
+  const loans=[{id:'a',stage:'Closing',notes:'Retain this',archivedAt:null},{id:'b',stage:'Funded',archivedAt:null}];
+  const route=load('app/api/pipeline/route.ts',{loan:{updateMany:async({where,data})=>{
+    let count=0;
+    for(const loan of loans) if(where.id.in.includes(loan.id) && (where.archivedAt === null ? loan.archivedAt === null : loan.archivedAt !== null)) {Object.assign(loan,data);count++;}
+    return {count};
+  }}});
+  const res=await route.PATCH(request({loanIds:['a'],action:'archive'}));
+  assert.equal(res.body.updated,1);
+  assert.ok(loans[0].archivedAt instanceof Date);
+  assert.equal(loans[0].notes,'Retain this');
+  assert.equal(loans[0].stage,'Closing');
+  assert.equal(loans[1].archivedAt,null);
+  await route.PATCH(request({loanIds:['a'],action:'restore'}));
+  assert.equal(loans[0].archivedAt,null);
+  assert.equal(loans[0].stage,'Closing');
+});
+test('archive rejects invalid actions and loan selections before mutation',async()=>{
+  const route=load('app/api/pipeline/route.ts',{});
+  for(const body of [{loanIds:[],action:'archive'},{loanIds:['a'],action:'delete'},null]) {
+    assert.equal((await route.PATCH(request(body))).status,400);
+  }
+});
+test('individual deletion also requires the loan to be archived',async()=>{
+  const route=load('app/api/loans/[id]/route.ts',{loan:{deleteMany:async({where})=>{
+    assert.equal(where.id,'a');
+    assert.equal(where.archivedAt.not,null);
+    return {count:0};
+  }}});
+  assert.equal((await route.DELETE({}, {params:Promise.resolve({id:'a'})})).status,409);
 });
