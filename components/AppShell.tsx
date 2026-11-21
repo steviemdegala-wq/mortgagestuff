@@ -38,20 +38,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <header className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+      <header className="border-b border-gray-200 px-6 py-4 flex items-start justify-between gap-4 sm:items-center">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
           <Link href="/" className="text-sm font-semibold tracking-tight text-black">
             Stevie De Gala
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:gap-x-6">
             <NavLink href="/">Dashboard</NavLink>
             <NavLink href="/people">People</NavLink>
             <NavLink href="/pipeline">Pipeline</NavLink>
+            <NavLink href="/top-10">Top 10</NavLink>
           </nav>
         </div>
         <button
           onClick={handleLogout}
-          className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
+          className="shrink-0 text-sm text-gray-400 hover:text-gray-700 transition-colors"
         >
           Sign out
         </button>
