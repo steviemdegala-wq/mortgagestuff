@@ -33,8 +33,20 @@ model Person {
   notes              Note[]
   faceToFaceMeetings FaceToFaceMeeting[]
   Loan               Loan[]
+  topClients         TopClient[]
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+}
+
+model TopClient {
+  rank                Int     @id
+  name                String
+  industry            String?
+  expectedDeals       Int?
+  averageDealSize     Float?
+  commissionRate      Float?
+  annualValueOverride Float?
+  contacts            Person[]
 }
 
 model Loan {
